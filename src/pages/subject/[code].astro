@@ -214,3 +214,12 @@ for (const year of sortedYears) {
     .paper-icon { width: 32px; height: 32px; }
   }
 </style>
+
+<script define:vars={{ code }}>
+  const RECENT_KEY = 'ku-recent';
+  let history = JSON.parse(localStorage.getItem(RECENT_KEY) || '[]');
+  history = history.filter(c => c !== code);
+  history.unshift(code);
+  if (history.length > 6) history.pop();
+  localStorage.setItem(RECENT_KEY, JSON.stringify(history));
+</script>

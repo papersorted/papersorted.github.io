@@ -39,8 +39,9 @@ const pdfUrl = `${base}papers/${code}/${decoded}`;
         <a href={pdfUrl} target="_blank" rel="noopener" class="bar-btn" title="Open in new tab">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
         </a>
-        <button id="dark-toggle" class="bar-btn" title="Toggle Dark Reader">
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
+        <button id="dark-toggle" class="bar-btn" title="Toggle Dark Mode">
+          <svg class="icon-moon" style="display:block" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
+          <svg class="icon-sun" style="display:none" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
         </button>
         <a href={pdfUrl} download={decoded} class="dl-btn">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
@@ -50,24 +51,131 @@ const pdfUrl = `${base}papers/${code}/${decoded}`;
     </div>
 
     <!-- PDF -->
-    <div class="pdf-area">
-      <iframe src={pdfUrl} class="pdf-frame" title={`${code} ${dateLabel}`}></iframe>
+    <div class="pdf-area" id="pdf-container">
+      <div id="pdf-loader" style="color:var(--text-faint); padding: 40px; font-family: monospace; text-align: center;">
+        <div class="spinner"></div>
+        <p id="loader-status">Initializing PDF Engine...</p>
+      </div>
     </div>
   </div>
 </Layout>
 
+<script is:inline src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<input type="hidden" id="pdf-url-source" value={pdfUrl} />
+
+<script is:inline>
+  (function() {
+    const container = document.getElementById('pdf-container');
+    const status = document.getElementById('loader-status');
+    const urlInput = document.getElementById('pdf-url-source');
+    
+    function log(msg, isError = false) {
+      if (status) {
+        status.innerHTML = msg;
+        if (isError) status.style.color = '#ff6b6b';
+      }
+      console.log(`[PDF-INIT] ${msg}`);
+    }
+
+    async function start() {
+      log("Checking engine globals...");
+      if (!window.pdfjsLib) {
+        log("❌ PDF.js library failed to load. Check your internet connection.", true);
+        return;
+      }
+      
+      const pdfUrl = urlInput ? urlInput.value : '';
+      if (!pdfUrl) {
+        log("❌ Error: PDF source URL is missing.", true);
+        return;
+      }
+
+      // Force absolute path
+      const finalUrl = pdfUrl.startsWith('/') ? pdfUrl : '/' + pdfUrl;
+      log("Fetching binary from: " + finalUrl);
+
+      try {
+        const pdfjsLib = window.pdfjsLib;
+        const loadingTask = pdfjsLib.getDocument({
+          url: finalUrl,
+          disableWorker: true
+        });
+
+        const pdf = await loadingTask.promise;
+        log(`Success! Rendering ${pdf.numPages} pages...`);
+        
+        const loader = document.getElementById('pdf-loader');
+        if (loader) loader.style.display = 'none';
+
+        for (let pageNum = 1; pageNum <= pdf.numPages; pageNum++) {
+          const canvas = document.createElement('canvas');
+          canvas.className = 'pdf-page-canvas';
+          container.appendChild(canvas);
+
+          const page = await pdf.getPage(pageNum);
+          const unscaled = page.getViewport({ scale: 1.0 });
+          const cw = Math.min(unscaled.width, (container.clientWidth || window.innerWidth) - 24);
+          const logicalScale = cw / unscaled.width;
+          const pixelRatio = window.devicePixelRatio || 1;
+          const viewport = page.getViewport({ scale: logicalScale * pixelRatio });
+          
+          const ctx = canvas.getContext('2d');
+          canvas.height = viewport.height;
+          canvas.width = viewport.width;
+          canvas.style.width = cw + 'px';
+          canvas.style.height = ((viewport.height / viewport.width) * cw) + 'px';
+          
+          await page.render({ canvasContext: ctx, viewport: viewport }).promise;
+        }
+      } catch (err) {
+        log(`❌ Rendering Error: ${err.message}`, true);
+        console.error(err);
+      }
+    }
+
+    if (document.readyState === 'complete') {
+      start();
+    } else {
+      window.addEventListener('load', start);
+    }
+  })();
+</script>
+
+<style>
+  .spinner {
+    width: 24px; height: 24px; border: 2px solid var(--accent);
+    border-top-color: transparent; border-radius: 50%;
+    margin: 0 auto 12px; animation: spin 0.8s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+</style>
+
 <script>
   const toggle = document.getElementById('dark-toggle');
-  const frame = document.querySelector('.pdf-frame');
+  const pdfContainer = document.querySelector('.pdf-area');
+  const iconMoon = document.querySelector('.icon-moon');
+  const iconSun = document.querySelector('.icon-sun');
   const KEY = 'ku-pdf-dark-mode';
   
-  if (localStorage.getItem(KEY) === 'true') {
-    frame?.classList.add('dark-pdf');
+  function syncToggleUI() {
+    if (pdfContainer?.classList.contains('dark-pdf')) {
+      if (iconMoon) (iconMoon as HTMLElement).style.display = 'none';
+      if (iconSun) (iconSun as HTMLElement).style.display = 'block';
+    } else {
+      if (iconMoon) (iconMoon as HTMLElement).style.display = 'block';
+      if (iconSun) (iconSun as HTMLElement).style.display = 'none';
+    }
   }
 
+  if (localStorage.getItem(KEY) === 'true') {
+    pdfContainer?.classList.add('dark-pdf');
+  }
+  syncToggleUI();
+
   toggle?.addEventListener('click', () => {
-    frame?.classList.toggle('dark-pdf');
-    localStorage.setItem(KEY, frame?.classList.contains('dark-pdf') ? 'true' : 'false');
+    pdfContainer?.classList.toggle('dark-pdf');
+    localStorage.setItem(KEY, pdfContainer?.classList.contains('dark-pdf') ? 'true' : 'false');
+    syncToggleUI();
   });
 </script>
 
@@ -125,9 +233,22 @@ const pdfUrl = `${base}papers/${code}/${decoded}`;
   }
   .dl-btn:hover { opacity: 0.9; transform: translateY(-1px); }
 
-  .pdf-area { flex: 1; overflow: hidden; background: #0e0e0e; }
-  .pdf-frame { width: 100%; height: 100%; border: none; background: #fff; transition: filter var(--dur) var(--ease); }
-  .pdf-frame.dark-pdf { filter: invert(0.92) hue-rotate(180deg) brightness(1.05) contrast(1.05); }
+  .pdf-area { 
+    flex: 1; overflow-y: auto; background: #0e0e0e; 
+    display: flex; flex-direction: column; align-items: center; 
+    gap: 16px; padding: 24px 12px;
+  }
+  
+  /* Use :global here so Astro Compiler doesn't strip it from final bundle since canvases are dynamically created */
+  :global(.pdf-page-canvas) { 
+    max-width: 100%; height: auto; display: block;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.4); 
+    background: #fff; transition: filter var(--dur) var(--ease); 
+  }
+  
+  :global(.dark-pdf) :global(.pdf-page-canvas) { 
+    filter: invert(0.92) hue-rotate(180deg) brightness(1.05) contrast(1.05); 
+  }
 
   @media (max-width: 640px) {
     .viewer-bar { padding: 0 12px; }

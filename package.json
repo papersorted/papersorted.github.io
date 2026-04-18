@@ -12,9 +12,11 @@
     "prebuild": "node scripts/generate-manifest.js",
     "build": "astro build",
     "preview": "astro preview",
-    "astro": "astro"
+    "astro": "astro",
+    "build:index": "node scripts/build-search.js"
   },
   "dependencies": {
-    "astro": "^6.1.8"
+    "astro": "^6.1.8",
+    "pdf-parse": "^1.1.4"
   }
 }

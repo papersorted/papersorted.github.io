@@ -19,8 +19,8 @@ self.addEventListener('fetch', (e) => {
   e.respondWith(
     caches.match(e.request).then((response) => {
       const fetchPromise = fetch(e.request).then((networkResponse) => {
-        // Don't cache PDFs or non-GET requests
-        if (e.request.method !== 'GET' || e.request.url.includes('.pdf') || !e.request.url.startsWith('http')) {
+        // Don't cache PDFs, dynamic JSON indexes, or non-GET requests
+        if (e.request.method !== 'GET' || e.request.url.includes('.pdf') || e.request.url.includes('.json') || !e.request.url.startsWith('http')) {
           return networkResponse;
         }
         

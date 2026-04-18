@@ -41,6 +41,14 @@ const cards: CardInfo[] = subjects.map((code) => ({
     </div>
   </div>
 
+  <!-- Recently Viewed -->
+  <div class="container anim" id="recent-container" style="display: none; margin-top: 28px; animation-delay:190ms">
+    <div class="grid-head" style="padding: 0 0 10px 0;">
+      <span class="grid-label">Recently Viewed</span>
+    </div>
+    <div class="recent-scroll" id="recent-carousel"></div>
+  </div>
+
   <!-- Filters -->
   <div class="container anim" style="animation-delay:200ms; margin-top: 16px;">
     <div class="program-filter">
@@ -188,6 +196,15 @@ const cards: CardInfo[] = subjects.map((code) => ({
     background: var(--accent); color: var(--bg); border-color: var(--accent);
   }
 
+  /* ── RECENT CAROUSEL ── */
+  .recent-scroll {
+    display: flex; gap: 8px; overflow-x: auto; 
+    padding: 8px 4px 20px 4px; margin: -8px -4px -12px -4px;
+    scrollbar-width: none;
+  }
+  .recent-scroll::-webkit-scrollbar { display: none; }
+  .recent-scroll .card { min-width: 155px; height: 84px; flex-shrink: 0; }
+
   /* ── GRID ── */
   .grid-head { padding: 28px 0 14px; }
   .grid-label {
@@ -314,22 +331,52 @@ const cards: CardInfo[] = subjects.map((code) => ({
     favCards.forEach(c => grid.prepend(c)); 
   }
 
-  // Setup Star button handlers
-  cards.forEach(c => {
-    const btn = c.querySelector('.star-btn')!;
-    btn.addEventListener('click', (e) => {
+  // Setup Star button handlers (Main Grid)
+  function attachStarListeners(btnElement) {
+    btnElement.addEventListener('click', (e) => {
       e.preventDefault();
       e.stopPropagation();
-      const code = c.dataset.code || "";
+      const card = btnElement.closest('.card');
+      const code = card.dataset.code || "";
       if (favorites.has(code)) favorites.delete(code);
       else favorites.add(code);
       saveFavorites();
       renderFavorites();
       update();
+      // Ensure clone synced
+      card.classList.toggle('favorited', favorites.has(code));
     });
-  });
+  }
 
+  cards.forEach(c => attachStarListeners(c.querySelector('.star-btn')!));
   renderFavorites();
+
+  // Load Recents
+  const recentContainer = document.getElementById("recent-container")!;
+  const recentCarousel = document.getElementById("recent-carousel")!;
+  const RECENT_KEY = 'ku-recent';
+  
+  function renderRecents() {
+    const history = JSON.parse(localStorage.getItem(RECENT_KEY) || '[]');
+    if (history.length === 0) return;
+    
+    recentContainer.style.display = "";
+    recentCarousel.innerHTML = "";
+    
+    history.forEach(code => {
+      const match = cards.find(c => c.dataset.code === code);
+      if (match) {
+        const clone = match.cloneNode(true);
+        clone.classList.remove('anim');
+        clone.style.animationDelay = '0ms';
+        recentCarousel.appendChild(clone);
+      }
+    });
+
+    const clones = recentCarousel.querySelectorAll('.star-btn');
+    clones.forEach(btn => attachStarListeners(btn));
+  }
+  renderRecents();
 
   function update() {
     const q = input.value.trim().toUpperCase();
