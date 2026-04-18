@@ -266,5 +266,25 @@ export const programs = {
     { semester: "III/II", subjects: ["ETEG301", "EEEG320", "COEG301", "EPEG315", "EPEG318", "PCEG308", "EEEG321", "PCEG319"] },
     { semester: "IV/I", subjects: ["MGTS403", "COEG401", "EPEG413", "EPEG425", "PCEG403", "PCEG404"] },
     { semester: "IV/II", subjects: ["MGTS402", "EPEG427", "EPEG415", "PCEG405", "PCEG435", "PCEG436"] }
+  ],
+  "Computer Science": [
+    { semester: "I/I", subjects: ["MATH101", "PHYS101", "COMP102", "ENGG111", "CHEM101", "EDRG101", "ENGG101"] },
+    { semester: "I/II", subjects: ["MATH104", "PHYS102", "COMP116", "ENGG112", "ENGT105", "ENVE101", "EDRG102", "ENGG102"] },
+    { semester: "II/I", subjects: ["MATH208", "MCSC201", "EEEG202", "EEEG211", "COMP202", "COMP206", "EEEG217"] },
+    { semester: "II/II", subjects: ["MATH207", "MCSC202", "COMP204", "COMP231", "COMP232", "COMP207"] },
+    { semester: "III/I", subjects: ["COMP317", "MGTS301", "COMP307", "COMP315", "COMP316", "COMP342", "COMP311"] },
+    { semester: "III/II", subjects: ["COMP343", "COMP302", "COMP409", "COMP314", "COMP323", "COMP341", "COMP313"] },
+    { semester: "IV/I", subjects: ["MGTS403", "COMP401", "COMP472"] },
+    { semester: "IV/II", subjects: ["MGTS402", "COMP486", "COMP408"] }
+  ],
+  "Data Science": [
+    { semester: "I/I", subjects: ["DSMA111", "DSMA113", "DSMA114", "DSMA115", "DSMA116"] },
+    { semester: "I/II", subjects: ["DSMA121", "DSMA122", "DSMA123", "DSMA125", "DSMA126", "DSMA199"] },
+    { semester: "II/I", subjects: ["DSMA211", "DSMA212", "DSMA214", "DSMA215", "DSMA216"] },
+    { semester: "II/II", subjects: ["DSMA221", "DSMA222", "DSMA224", "DSMA225", "DSMA226", "DSMA299"] },
+    { semester: "III/I", subjects: ["DSMA311", "DSMA313", "DSMA314", "DSMA315", "DSMA316"] },
+    { semester: "III/II", subjects: ["DSMA321", "DSMA322", "DSMA323", "DSMA324", "DSMA325", "DSMA399"] },
+    { semester: "IV/I", subjects: ["DSMA411", "DSMA412", "DSMA413", "DSMA414"] },
+    { semester: "IV/II", subjects: ["DSMA498", "DSMA499"] }
   ]
 };
