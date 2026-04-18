@@ -133,57 +133,59 @@ const subjects = Object.keys(manifest);
       .breadcrumb a:hover { color: var(--accent); }
       .breadcrumb .sep { color: var(--text-faint); font-size: 0.65rem; }
       .breadcrumb .current { color: var(--text-secondary); }
-      .palette-overlay {
-        position: fixed; inset: 0; z-index: 10000;
-        background: rgba(0,0,0,0.6); backdrop-filter: blur(4px);
-        display: flex; align-items: flex-start; justify-content: center;
-        padding-top: 12vh; opacity: 0; pointer-events: none;
-        transition: opacity var(--dur) var(--ease);
-      }
-      .palette-overlay.open { opacity: 1; pointer-events: auto; }
-      
-      .palette-modal {
-        width: 100%; max-width: 580px; background: var(--bg);
-        border: 1px solid var(--border); border-radius: var(--r);
-        box-shadow: 0 16px 48px rgba(0,0,0,0.4);
-        transform: scale(0.96) translateY(10px);
-        transition: all var(--dur) var(--ease);
-        overflow: hidden; display: flex; flex-direction: column;
-      }
-      .palette-overlay.open .palette-modal { transform: scale(1) translateY(0); }
-
-      .palette-input-wrap {
-        display: flex; align-items: center; padding: 0 16px;
-        border-bottom: 1px solid var(--border);
-      }
-      .palette-input-wrap svg { color: var(--text-muted); }
-      .palette-input-wrap input {
-        width: 100%; padding: 18px 12px; background: transparent; border: none;
-        font-size: 1.1rem; color: var(--text); outline: none; font-family: inherit;
-      }
-      .palette-input-wrap input::placeholder { color: var(--text-muted); }
-
-      .palette-results {
-        max-height: 380px; overflow-y: auto; padding: 8px 0;
-        list-style: none; margin: 0;
-      }
-      .palette-item {
-        padding: 10px 18px; margin: 0 8px; border-radius: var(--r-sm);
-        display: flex; align-items: center; gap: 12px;
-        color: var(--text-secondary); cursor: pointer;
-        transition: all 0.1s;
-      }
-      .palette-item.active, .palette-item:hover {
-        background: var(--bg-card-hover); color: var(--text);
-      }
-      .palette-item .icon { color: var(--text-faint); }
-      .palette-item.active .icon { color: var(--accent); }
     </style>
   </head>
   <body>
     <slot />
 
     <!-- Command Palette -->
+    <style is:inline>
+      .palette-overlay {
+        position: fixed; inset: 0; z-index: 10000;
+        background: rgba(0,0,0,0.6); backdrop-filter: blur(4px);
+        display: flex; align-items: flex-start; justify-content: center;
+        padding-top: 12vh; opacity: 0; pointer-events: none;
+        transition: opacity 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+      }
+      .palette-overlay.open { opacity: 1; pointer-events: auto; }
+      
+      .palette-modal {
+        width: 100%; max-width: 580px; background: #2b2b2b;
+        border: 1px solid rgba(255,255,255,0.08); border-radius: 8px;
+        box-shadow: 0 16px 48px rgba(0,0,0,0.4);
+        transform: scale(0.96) translateY(10px);
+        transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+        overflow: hidden; display: flex; flex-direction: column;
+      }
+      .palette-overlay.open .palette-modal { transform: scale(1) translateY(0); }
+
+      .palette-input-wrap {
+        display: flex; align-items: center; padding: 0 16px;
+        border-bottom: 1px solid rgba(255,255,255,0.08);
+      }
+      .palette-input-wrap svg { color: #78736d; }
+      .palette-input-wrap input {
+        width: 100%; padding: 18px 12px; background: transparent; border: none;
+        font-size: 1.1rem; color: #eae6e0; outline: none; font-family: inherit;
+      }
+      .palette-input-wrap input::placeholder { color: #78736d; }
+
+      .palette-results {
+        max-height: 380px; overflow-y: auto; padding: 8px 0;
+        list-style: none; margin: 0;
+      }
+      .palette-item {
+        padding: 10px 18px; margin: 0 8px; border-radius: 5px;
+        display: flex; align-items: center; gap: 12px;
+        color: #a39e98; cursor: pointer;
+        transition: all 0.1s;
+      }
+      .palette-item.active, .palette-item:hover {
+        background: rgba(255,255,255,0.06); color: #eae6e0;
+      }
+      .palette-item .icon { color: #56524e; }
+      .palette-item.active .icon { color: #c4a882; }
+    </style>
     <div id="cmd-palette" class="palette-overlay">
       <div class="palette-modal" id="cmd-modal">
         <div class="palette-input-wrap">
