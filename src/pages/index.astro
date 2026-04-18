@@ -218,9 +218,9 @@ const cards: CardInfo[] = subjects.map((code) => ({
   }
   .card:active { transform: translateY(0); transition-duration: 0.06s; }
   .card-link {
+    position: absolute; inset: 0;
     display: flex; flex-direction: column; justify-content: space-between;
-    height: 100%; width: 100%; padding: 16px; outline: none;
-    padding-right: 40px; /* prevent text overlap with star */
+    padding: 16px; padding-right: 48px; outline: none;
   }
   .card-code {
     font-size: 0.88rem; font-weight: 500;
@@ -235,9 +235,11 @@ const cards: CardInfo[] = subjects.map((code) => ({
     width: 28px; height: 28px;
     display: flex; align-items: center; justify-content: center;
     background: transparent; border: none; color: var(--text-faint);
-    cursor: pointer; border-radius: 50%;
+    cursor: auto; border-radius: 50%;
     transition: all var(--dur) var(--ease);
   }
+  /* The anchor captures clicks generally, we intercept star-btn clicks inside the script,
+     but we want the pointer cursor to apply cleanly over the whole card. */
   .star-btn:hover { color: var(--accent); background: var(--bg-card-hover); }
   .card.favorited .star-btn { color: var(--accent); }
   .card.favorited .star-icon { fill: var(--accent); stroke: var(--accent); }
