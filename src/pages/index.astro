@@ -144,8 +144,10 @@ const cards: CardInfo[] = subjects.map((code) => ({
   }
 
   /* ── PROGRAM DROPDOWN ── */
-  .program-filter { display: flex; align-items: center; }
+  .program-filter { display: flex; align-items: center; width: 100%; min-width: 0; }
   .dropdown {
+    width: 100%; max-width: 100%;
+    text-overflow: ellipsis; overflow: hidden; white-space: nowrap;
     background: var(--bg-card); color: var(--text);
     border: 1px solid var(--border); border-radius: var(--r-sm);
     padding: 8px 18px 8px 14px; font-size: 0.85rem; font-family: inherit; font-weight: 500;

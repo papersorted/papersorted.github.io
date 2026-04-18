@@ -1,43 +1,20 @@
-# Astro Starter Kit: Minimal
+# KU Exam Archives
 
-```sh
-npm create astro@latest -- --template minimal
-```
+A web archive for Kathmandu University exam papers. 
 
-> 🧑‍🚀 **Seasoned astronaut?** Delete this file. Have fun!
+## Overview
+This is a static site built to help Kathmandu University students easily find past exam papers. It maps a collection of PDF files to specific engineering and science programs, allowing students to filter subjects based on their enrolled program and current semester.
 
-## 🚀 Project Structure
+## Features
+- **Search**: Search for specific subjects by their course code or name.
+- **Program Filter**: Select your specific program (e.g., Computer Science, Civil Engineering) to see only relevant subjects. 
+- **Semester Filter**: Narrow down the subject list by specific semesters.
+- **File System Based**: The site automatically generates its catalog based on the PDFs placed in the `public/papers/` directory during the build process. No separate database is required.
 
-Inside of your Astro project, you'll see the following folders and files:
+## Local Development
+1. Ensure Node.js is installed on your computer.
+2. Install the necessary dependencies: `npm install` 
+3. Start the development server: `npm run dev`
 
-```text
-/
-├── public/
-├── src/
-│   └── pages/
-│       └── index.astro
-└── package.json
-```
-
-Astro looks for `.astro` or `.md` files in the `src/pages/` directory. Each page is exposed as a route based on its file name.
-
-There's nothing special about `src/components/`, but that's where we like to put any Astro/React/Vue/Svelte/Preact components.
-
-Any static assets, like images, can be placed in the `public/` directory.
-
-## 🧞 Commands
-
-All commands are run from the root of the project, from a terminal:
-
-| Command                   | Action                                           |
-| :------------------------ | :----------------------------------------------- |
-| `npm install`             | Installs dependencies                            |
-| `npm run dev`             | Starts local dev server at `localhost:4321`      |
-| `npm run build`           | Build your production site to `./dist/`          |
-| `npm run preview`         | Preview your build locally, before deploying     |
-| `npm run astro ...`       | Run CLI commands like `astro add`, `astro check` |
-| `npm run astro -- --help` | Get help using the Astro CLI                     |
-
-## 👀 Want to learn more?
-
-Feel free to check [our documentation](https://docs.astro.build) or jump into our [Discord server](https://astro.build/chat).
+### Adding New Papers
+To add new papers to the archive, simply put the PDF files into the `public/papers/` directory. Name the file using the exact subject code (e.g., `COMP116.pdf`). The application will automatically detect and list them the next time it builds.
