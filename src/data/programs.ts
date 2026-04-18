@@ -206,5 +206,15 @@ export const programs = {
     { semester: "III/II", subjects: ["MEEG309", "MEEG306", "MEEG308", "MEEG318", "MGTS303", "MEEG313", "MEEG311"] },
     { semester: "IV/I", subjects: ["MGTS402", "MEPP403", "MEPP408", "MEPP439", "MEEG404", "MEEG406", "MEEG458", "MEEG452", "MEPP435", "MEEG427", "MEPP457", "MEPP432", "MEPP429", "MEEG437"] },
     { semester: "IV/II", subjects: ["MEEG434", "MEEG417"] }
+  ],
+  "Artificial Intelligence": [
+    { semester: "I/I", subjects: ["AICC101", "AIPC101", "AIMA101", "AIMA102", "AIME101", "AIMC101"] },
+    { semester: "I/II", subjects: ["AIPC102", "AICS101", "AIMA103", "AIMA104", "AICC102", "AISP121"] },
+    { semester: "II/I", subjects: ["AICS201", "AICS202", "AICC201", "AICC202", "AIMA201", "AISP211"] },
+    { semester: "II/II", subjects: ["AICS203", "AIMA202", "AIMA203", "AICC203", "AIPC201", "AISP222"] },
+    { semester: "III/I", subjects: ["AICC302", "AICC301", "AICS301", "AIMI301", "AISP311"] },
+    { semester: "III/II", subjects: ["AICC351", "AICL311", "AIMA331", "AISM311", "AISP322"] },
+    { semester: "IV/I", subjects: ["AICC401", "AIMA431", "AIIN411", "AISP411"] },
+    { semester: "IV/II", subjects: ["AIMS401", "AIIN499"] }
   ]
 };
