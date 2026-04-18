@@ -32,5 +32,39 @@ export const programs = {
       semester: "IV/II",
       subjects: ["MGTS402", "COMP408"]
     }
+  ],
+  "Civil Engineering": [
+    {
+      semester: "I/I",
+      subjects: ["MATH101", "ENGT101", "PHYS101", "COMP103", "EEEG101", "ENGG101", "EDRG101"]
+    },
+    {
+      semester: "I/II",
+      subjects: ["MATH104", "ENGT102", "PHYS102", "ENVE101", "COMP116", "MEEG101", "ENGG102", "EDRG102", "ENGG103"]
+    },
+    {
+      semester: "II/I",
+      subjects: ["MATH205", "MATH207", "CIEG201", "CIEG202", "CIEG203", "CIEG204", "CIEG205"]
+    },
+    {
+      semester: "II/II",
+      subjects: ["MCSC202", "MATH208", "CIEG206", "CIEG207", "CIEG208", "CIEG209", "CIEG210"]
+    },
+    {
+      semester: "III/I",
+      subjects: ["MGTS301", "CIEG301", "CIEG302", "CIEG303", "CIEG304", "CIEG305", "CIEG306"]
+    },
+    {
+      semester: "III/II",
+      subjects: ["CIEG307", "CIEG308", "CIEG309", "CIEG310", "CIEG314", "CIEG312", "CIEG313", "CIEG316", "CIEG311"]
+    },
+    {
+      semester: "IV/I",
+      subjects: ["CIEG401", "CIEG402", "CIEG403", "CIEG404", "CIEG405", "CIEG406", "CIEG407", "CIEG408", "CIEG409"]
+    },
+    {
+      semester: "IV/II",
+      subjects: ["CIEG449", "CIEG499"]
+    }
   ]
 };

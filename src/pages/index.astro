@@ -43,13 +43,24 @@ const cards: CardInfo[] = subjects.map((code) => ({
 
   <!-- Filters -->
   <div class="container anim" style="animation-delay:200ms; margin-top: 16px;">
-    <div class="filters-scroll">
+    <div class="program-filter">
+      <select id="program-select" class="dropdown">
+        <option value="none">All Programs</option>
+        {Object.keys(programs).map((prog) => (
+          <option value={prog}>{prog}</option>
+        ))}
+      </select>
+    </div>
+
+    <div class="filters-scroll" id="semester-wrapper" style="display:none; margin-top: 12px;">
       <div class="filters" id="semester-filters">
         <button class="filter-btn active" data-sem="all">All Semesters</button>
-        {programs["Computer Engineering"].map((sem) => (
-          <button class="filter-btn" data-sem={sem.semester} data-subjects={sem.subjects.join(",")}>
-            Sem {sem.semester}
-          </button>
+        {Object.entries(programs).map(([progName, sems]) => (
+          sems.map((sem) => (
+             <button class="filter-btn sem-btn" style="display:none;" data-prog={progName} data-sem={sem.semester} data-subjects={sem.subjects.join(",")}>
+               Sem {sem.semester}
+             </button>
+          ))
         ))}
       </div>
     </div>
@@ -131,6 +142,21 @@ const cards: CardInfo[] = subjects.map((code) => ({
     border-radius: 4px; font-family: 'JetBrains Mono', monospace;
     font-size: 0.6rem; font-weight: 500; color: var(--text-muted);
   }
+
+  /* ── PROGRAM DROPDOWN ── */
+  .program-filter { display: flex; align-items: center; }
+  .dropdown {
+    background: var(--bg-card); color: var(--text);
+    border: 1px solid var(--border); border-radius: var(--r-sm);
+    padding: 8px 18px 8px 14px; font-size: 0.85rem; font-family: inherit; font-weight: 500;
+    cursor: pointer; transition: all var(--dur) var(--ease); outline: none;
+    -webkit-appearance: none; appearance: none;
+    background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23a39e98%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E");
+    background-repeat: no-repeat; background-position: right 14px top 55%; background-size: 10px auto;
+    padding-right: 36px;
+  }
+  .dropdown:hover { border-color: var(--border-hover); background-color: var(--bg-card-hover); }
+  .dropdown:focus { border-color: var(--border-focus); box-shadow: 0 0 0 2px rgba(201,168,124,0.08); }
 
   /* ── FILTERS ── */
   .filters-scroll {
@@ -222,6 +248,11 @@ const cards: CardInfo[] = subjects.map((code) => ({
   const label = document.getElementById("results-count")!;
   const empty = document.getElementById("no-results")!;
   const filterBtns = Array.from(document.querySelectorAll<HTMLButtonElement>(".filter-btn"));
+  
+  const progSelect = document.getElementById("program-select") as HTMLSelectElement;
+  const semWrapper = document.getElementById("semester-wrapper")!;
+  const semBtns = Array.from(document.querySelectorAll<HTMLButtonElement>(".sem-btn"));
+  const allSemBtn = document.querySelector<HTMLButtonElement>("[data-sem='all']")!;
 
   let activeSubjects: string[] | null = null;
 
@@ -241,6 +272,27 @@ const cards: CardInfo[] = subjects.map((code) => ({
     empty.style.display = n === 0 ? "" : "none";
   }
 
+  progSelect.addEventListener("change", () => {
+    const prog = progSelect.value;
+    if (prog === "none") {
+      semWrapper.style.display = "none";
+      activeSubjects = null;
+    } else {
+      semWrapper.style.display = "";
+      let allSubsGradiant: string[] = [];
+      semBtns.forEach(btn => {
+        const match = btn.dataset.prog === prog;
+        btn.style.display = match ? "" : "none";
+        if (match) {
+           allSubsGradiant.push(...btn.dataset.subjects!.split(","));
+        }
+      });
+      allSemBtn.dataset.subjects = allSubsGradiant.join(",");
+      allSemBtn.click(); // Trigger the click to apply the filter
+    }
+    update();
+  });
+
   filterBtns.forEach(btn => {
     btn.addEventListener("click", () => {
       filterBtns.forEach(b => b.classList.remove("active"));
@@ -248,9 +300,9 @@ const cards: CardInfo[] = subjects.map((code) => ({
       
       const sem = btn.dataset.sem;
       if (sem === "all") {
-        activeSubjects = null;
+         activeSubjects = btn.dataset.subjects ? btn.dataset.subjects.split(",") : null;
       } else {
-        activeSubjects = btn.dataset.subjects!.split(",");
+         activeSubjects = btn.dataset.subjects!.split(",");
       }
       update();
     });
