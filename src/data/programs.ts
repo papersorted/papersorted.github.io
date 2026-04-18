@@ -237,10 +237,14 @@ export const programs = {
     { semester: "IV/I", subjects: ["PHYS401", "PHYS402", "PHYS403", "PHYS404", "PHYS405", "PHYS406"] },
     { semester: "IV/II", subjects: ["MGTS402", "PHYS412", "PHYS431", "PHYS421", "PHYS499"] }
   ],
-  "Physics (M.Sc.)": [
-    { semester: "I/I", subjects: ["PHYS501", "PHYS502", "PHYS503", "PHYS504", "PHYS511", "PHYS541"] },
-    { semester: "I/II", subjects: ["PHYS505", "PHYS506", "PHYS507", "PHYS508", "PHYS512", "PHYS542"] },
-    { semester: "II/I", subjects: ["PHYS601", "PHYS602", "PHYS603", "PHYS611", "PHYS612", "PHYS641"] },
-    { semester: "II/II", subjects: ["PHYS631", "PHYS632", "PHYS633", "PHYS634", "PHYS635", "PHYS636", "PHYS637", "PHYS699"] }
+  "Biotechnology": [
+    { semester: "I/I", subjects: ["MATH111", "PHYS104", "CHEM101", "BIOL103", "COMP101", "PHYS146", "ENGT104"] },
+    { semester: "I/II", subjects: ["MATH102", "PHYS105", "COMP117", "CHEM103", "BIOT101", "BIOT102", "EDRG103"] },
+    { semester: "II/I", subjects: ["BIOT201", "BIOT202", "BIOT203", "BIOT205", "BIOT208", "BIOT209", "BIOT251", "BIOT252", "BIOT253", "BIOT256"] },
+    { semester: "II/II", subjects: ["BIOT206", "BIOT207", "BIOT210", "BIOT211", "CHEM212", "BIOT254", "BIOT255", "BIOT257", "CHEM214"] },
+    { semester: "III/I", subjects: ["BIOT301", "BIOT302", "BIOT309", "BIOT311", "INAN301", "BIOT351", "BIOT352", "BIOT354", "BIOT357", "INAN351"] },
+    { semester: "III/II", subjects: ["BIOT306", "BIOT308", "BIOT310", "BIOT312", "BIOT313", "BIOT314", "BIOT315", "BIOT356", "BIOT358", "BIOT359"] },
+    { semester: "IV/I", subjects: ["BIOT401", "BIOT403", "MGTS402", "BIOT451", "BIOT453", "BIOT404", "BIOT405", "BIOT406", "BIOT407", "BIOT408", "BIOT409", "BIOT410", "BIOT411", "BIOT412", "BIOT413", "BIOT414", "BIOT415", "BIOT416", "BIOT417", "BIOT418", "BIOT419", "BIOT420", "BIOT421", "BIOT422", "BIOT423"] },
+    { semester: "IV/II", subjects: ["BIOT455", "BIOT404", "BIOT405", "BIOT406", "BIOT407", "BIOT408", "BIOT409", "BIOT410", "BIOT411", "BIOT412", "BIOT413", "BIOT414", "BIOT415", "BIOT416", "BIOT417", "BIOT418", "BIOT419", "BIOT420", "BIOT421", "BIOT422", "BIOT423"] }
   ]
 };
