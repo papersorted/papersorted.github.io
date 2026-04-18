@@ -75,16 +75,16 @@ const cards: CardInfo[] = subjects.map((code) => ({
     border-bottom: 1px solid var(--border);
   }
   .hero-tag {
-    font-size: 0.72rem; font-weight: 600; text-transform: uppercase;
-    letter-spacing: 0.12em; color: var(--accent); margin-bottom: 16px;
+    font-size: 0.75rem; font-weight: 600; text-transform: uppercase;
+    letter-spacing: 0.18em; color: var(--accent); margin-bottom: 16px;
   }
   .hero-title {
-    font-size: clamp(3rem, 8vw, 5.5rem);
-    font-weight: 700; line-height: 1; letter-spacing: -0.02em;
-    color: #e8e4df; margin-bottom: 20px;
+    font-size: clamp(3.2rem, 9vw, 6rem);
+    font-weight: 500; line-height: 1; letter-spacing: -0.03em;
+    color: #ffffff; margin-bottom: 20px;
   }
   .hero-sub {
-    font-size: 0.88rem; color: var(--text-muted); font-weight: 400;
+    font-size: 0.95rem; color: var(--text-secondary); font-weight: 400;
     padding-bottom: 48px;
   }
 
@@ -98,7 +98,7 @@ const cards: CardInfo[] = subjects.map((code) => ({
     border-radius: var(--r-sm);
     transition: border-color var(--dur) var(--ease), box-shadow var(--dur) var(--ease);
   }
-  .search-box svg { color: var(--text-faint); flex-shrink: 0; }
+  .search-box svg { color: var(--text-muted); flex-shrink: 0; }
   .search-box:focus-within {
     border-color: var(--border-focus);
     box-shadow: 0 0 0 2px rgba(201,168,124,0.08);
@@ -108,13 +108,13 @@ const cards: CardInfo[] = subjects.map((code) => ({
     font-family: inherit; font-size: 0.85rem;
     color: var(--text); font-weight: 400;
   }
-  .search-box input::placeholder { color: var(--text-faint); }
+  .search-box input::placeholder { color: var(--text-muted); }
   .search-box kbd {
     display: inline-flex; align-items: center; justify-content: center;
     width: 22px; height: 22px;
     background: rgba(255,255,255,0.04); border: 1px solid var(--border);
     border-radius: 4px; font-family: 'JetBrains Mono', monospace;
-    font-size: 0.6rem; font-weight: 500; color: var(--text-faint);
+    font-size: 0.6rem; font-weight: 500; color: var(--text-muted);
   }
 
   /* ── GRID ── */
