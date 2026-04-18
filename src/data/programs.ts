@@ -142,5 +142,39 @@ export const programs = {
       semester: "V/II",
       subjects: ["ARCH505", "ARCH506"]
     }
+  ],
+  "Mechanical Engineering (Automobile)": [
+    {
+      semester: "I/I",
+      subjects: ["MATH101", "PHYS101", "CHEM101", "MEEG112", "ENGG111", "COMP102", "ENGG101", "EDRG101"]
+    },
+    {
+      semester: "I/II",
+      subjects: ["MATH104", "PHYS102", "ENGT105", "COMP116", "ENVE101", "ENGG112", "ENGG102", "EDRG102"]
+    },
+    {
+      semester: "II/I",
+      subjects: ["MATH207", "MEEG217", "MEEG216", "MEEG213", "EEEG204", "MEEG219", "MEEG210", "MEEG211"]
+    },
+    {
+      semester: "II/II",
+      subjects: ["MEEG207", "MCSC202", "MATH208", "MEEG202", "MEEG206", "MEEG215", "MEEG212"]
+    },
+    {
+      semester: "III/I",
+      subjects: ["COEG304", "MEEG303", "MEEG325", "MGTS301", "MEEG315", "MEEG312", "MEEG305"]
+    },
+    {
+      semester: "III/II",
+      subjects: ["MEEG317", "MEEG306", "MEEG308", "MEEG318", "MGTS303", "MEEG313", "MEEG311"]
+    },
+    {
+      semester: "IV/I",
+      subjects: ["MGTS402", "MEPP408", "MEPP403", "MEPP412", "MEEG404", "MEEG406", "MEEG458", "MEEG452", "MEPP435", "MEEG427", "MEPP457", "MEPP432", "MEPP429", "MEEG437"]
+    },
+    {
+      semester: "IV/II",
+      subjects: ["MEEG434", "MEEG417"]
+    }
   ]
 };
