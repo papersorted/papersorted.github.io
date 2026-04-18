@@ -286,5 +286,15 @@ export const programs = {
     { semester: "III/II", subjects: ["DSMA321", "DSMA322", "DSMA323", "DSMA324", "DSMA325", "DSMA399"] },
     { semester: "IV/I", subjects: ["DSMA411", "DSMA412", "DSMA413", "DSMA414"] },
     { semester: "IV/II", subjects: ["DSMA498", "DSMA499"] }
+  ],
+  "Computational Mathematics": [
+    { semester: "I/I", subjects: ["PHYS101", "MATH101", "CHEM101", "BIOL103", "COMP102", "EDRG101", "ENGG101"] },
+    { semester: "I/II", subjects: ["PHYS102", "MATH103", "CHEM102", "ENGG112", "COMP116", "ENGT105", "EDRG102", "ENGG102"] },
+    { semester: "II/I", subjects: ["MCSC201", "MATH201", "MATH204", "MATH208", "COMP202", "EEEG202"] },
+    { semester: "II/II", subjects: ["MATH211", "MATH213", "MSCS202", "MATH217", "COMP204", "COMP232", "MATH252"] },
+    { semester: "III/I", subjects: ["MATH302", "MATH304", "MATH326", "MGTS301", "COMP315", "COMP316", "COMP311"] },
+    { semester: "III/II", subjects: ["MATH322", "COMP323", "MATH325", "MATH327", "COMP307", "COMP314", "MATH352"] },
+    { semester: "IV/I", subjects: ["MATH402", "MATH403", "MGTS403", "COMP401", "COMP472", "MATH451"] },
+    { semester: "IV/II", subjects: ["MGTS402", "MATH499", "COMP408", "MATH431", "MATH426", "MATH432", "MATH404", "MATH433", "COMP478", "COMP484", "COMP482"] }
   ]
 };
