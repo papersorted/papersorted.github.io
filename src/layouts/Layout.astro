@@ -63,7 +63,7 @@ const subjectSearchSeedJson = JSON.stringify(subjectSearchSeeds).replace(/</g, "
         --bg-card: rgba(255,255,255,0.035);
         --bg-card-hover: rgba(255,255,255,0.06);
         --bg-input: rgba(255,255,255,0.04);
-        --bg-modal: rgba(34,34,34,0.92);
+        --bg-modal: rgba(31,31,31,0.96);
         --border: rgba(255,255,255,0.08);
         --border-hover: rgba(255,255,255,0.14);
         --border-focus: rgba(255,255,255,0.22);
@@ -85,6 +85,14 @@ const subjectSearchSeedJson = JSON.stringify(subjectSearchSeeds).replace(/</g, "
         --viewer-bg: #101113;
         --grain-opacity: 0.48;
         --theme-toggle-glow: rgba(234,230,224,0.08);
+        --palette-overlay-bg: rgba(5,5,5,0.72);
+        --palette-modal-bg: rgba(31,31,31,0.965);
+        --palette-modal-border: rgba(255,255,255,0.085);
+        --palette-modal-shadow: 0 24px 72px rgba(0,0,0,0.52), inset 0 1px 0 rgba(255,255,255,0.025);
+        --palette-input-bg: rgba(255,255,255,0.018);
+        --palette-divider: rgba(255,255,255,0.07);
+        --palette-item-bg-hover: rgba(255,255,255,0.05);
+        --palette-item-bg-active: rgba(255,255,255,0.07);
         --r: 8px;
         --r-sm: 5px;
         color-scheme: dark;
@@ -113,6 +121,14 @@ const subjectSearchSeedJson = JSON.stringify(subjectSearchSeeds).replace(/</g, "
         --viewer-bg: #e9e1d5;
         --grain-opacity: 0.18;
         --theme-toggle-glow: rgba(166,139,99,0.14);
+        --palette-overlay-bg: rgba(26,22,18,0.16);
+        --palette-modal-bg: rgba(255,255,255,0.94);
+        --palette-modal-border: rgba(0,0,0,0.08);
+        --palette-modal-shadow: 0 18px 48px rgba(0,0,0,0.12), inset 0 1px 0 rgba(255,255,255,0.6);
+        --palette-input-bg: rgba(0,0,0,0.015);
+        --palette-divider: rgba(0,0,0,0.06);
+        --palette-item-bg-hover: rgba(0,0,0,0.03);
+        --palette-item-bg-active: rgba(0,0,0,0.045);
         color-scheme: light;
       }
 
@@ -276,7 +292,9 @@ const subjectSearchSeedJson = JSON.stringify(subjectSearchSeeds).replace(/</g, "
     <style is:inline>
       .palette-overlay {
         position: fixed; inset: 0; z-index: 10000;
-        background: rgba(0,0,0,0.6); backdrop-filter: blur(4px);
+        background: var(--palette-overlay-bg);
+        backdrop-filter: blur(10px) saturate(118%);
+        -webkit-backdrop-filter: blur(10px) saturate(118%);
         display: flex; align-items: flex-start; justify-content: center;
         padding-top: 12vh; opacity: 0; pointer-events: none;
         transition: opacity 0.25s cubic-bezier(0.16, 1, 0.3, 1);
@@ -284,9 +302,15 @@ const subjectSearchSeedJson = JSON.stringify(subjectSearchSeeds).replace(/</g, "
       .palette-overlay.open { opacity: 1; pointer-events: auto; }
       
       .palette-modal {
-        width: 100%; max-width: 580px; background: var(--bg-modal, #2b2b2b);
-        border: 1px solid var(--border); border-radius: 8px;
-        box-shadow: 0 16px 48px rgba(0,0,0,0.4);
+        width: 100%; max-width: 580px;
+        background:
+          linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0) 38%),
+          var(--palette-modal-bg, var(--bg-modal, #2b2b2b));
+        border: 1px solid var(--palette-modal-border, var(--border));
+        border-radius: 8px;
+        box-shadow: var(--palette-modal-shadow);
+        backdrop-filter: blur(22px) saturate(128%);
+        -webkit-backdrop-filter: blur(22px) saturate(128%);
         transform: scale(0.96) translateY(10px);
         transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
         overflow: hidden; display: flex; flex-direction: column;
@@ -295,7 +319,8 @@ const subjectSearchSeedJson = JSON.stringify(subjectSearchSeeds).replace(/</g, "
 
       .palette-input-wrap {
         display: flex; align-items: center; padding: 0 16px;
-        border-bottom: 1px solid var(--border);
+        background: var(--palette-input-bg);
+        border-bottom: 1px solid var(--palette-divider, var(--border));
       }
       .palette-input-wrap svg { color: var(--text-muted); }
       .palette-input-wrap input {
@@ -312,10 +337,16 @@ const subjectSearchSeedJson = JSON.stringify(subjectSearchSeeds).replace(/</g, "
         padding: 10px 18px; margin: 0 8px; border-radius: 5px;
         display: flex; align-items: center; gap: 12px;
         color: var(--text-secondary); cursor: pointer;
-        transition: all 0.1s;
+        transition: background-color 0.14s ease, color 0.14s ease;
       }
       .palette-item.active, .palette-item:hover {
-        background: var(--bg-card-hover); color: var(--text);
+        color: var(--text);
+      }
+      .palette-item:hover {
+        background: var(--palette-item-bg-hover, var(--bg-card-hover));
+      }
+      .palette-item.active {
+        background: var(--palette-item-bg-active, var(--bg-card-hover));
       }
       .palette-item .icon { color: var(--text-faint); }
       .palette-item.active .icon { color: var(--accent); }
