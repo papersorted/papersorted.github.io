@@ -100,5 +100,47 @@ export const programs = {
       semester: "IV/II",
       subjects: ["GEOM404", "GEOM412", "GEOM410"]
     }
+  ],
+  "Architecture": [
+    {
+      semester: "I/I",
+      subjects: ["MATH105", "ENGT103", "ARCH111", "ARCH121", "ARCH151", "ARCH131", "ARCH101"]
+    },
+    {
+      semester: "I/II",
+      subjects: ["MATH106", "NEPT101", "ARCH112", "ARCH161", "ARCH142", "ARCH132", "ARCH152", "ARCH171"]
+    },
+    {
+      semester: "II/I",
+      subjects: ["ARCH201", "ARCH202", "ARCH203", "ARCH206", "ARCH207", "CIEG231", "CIEG232"]
+    },
+    {
+      semester: "II/II",
+      subjects: ["ARCH215", "ARCH216", "ARCH219", "CIEG241", "CIEG242"]
+    },
+    {
+      semester: "III/I",
+      subjects: ["ARCH301", "ARCH302", "ARCH304", "ARCH305", "CIEG331", "CIEG332", "MGTS305"]
+    },
+    {
+      semester: "III/II",
+      subjects: ["ARCH316", "ARCH318", "ARCH319", "CIEG341", "CIEG342", "EEEG331"]
+    },
+    {
+      semester: "IV/I",
+      subjects: ["ARCH401", "ARCH402", "CIEG403", "CIEG431", "MEEG442"]
+    },
+    {
+      semester: "IV/II",
+      subjects: ["ARCH416", "SOCA401", "MGTS402"]
+    },
+    {
+      semester: "V/I",
+      subjects: ["ARCH501", "ARCH502"]
+    },
+    {
+      semester: "V/II",
+      subjects: ["ARCH505", "ARCH506"]
+    }
   ]
 };
