@@ -1,6 +1,7 @@
 ---
 import Layout from "../layouts/Layout.astro";
 import manifest from "../data/manifest.json";
+import { programs } from "../data/programs.ts";
 
 const data = manifest as Record<string, {date: string; file: string}[]>;
 const subjects = Object.keys(data).sort();
@@ -36,6 +37,20 @@ const cards: CardInfo[] = subjects.map((code) => ({
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
         <input type="text" id="search-input" placeholder="Search subjects…" autocomplete="off" spellcheck="false" />
         <kbd>/</kbd>
+      </div>
+    </div>
+  </div>
+
+  <!-- Filters -->
+  <div class="container anim" style="animation-delay:200ms; margin-top: 16px;">
+    <div class="filters-scroll">
+      <div class="filters" id="semester-filters">
+        <button class="filter-btn active" data-sem="all">All Semesters</button>
+        {programs["Computer Engineering"].map((sem) => (
+          <button class="filter-btn" data-sem={sem.semester} data-subjects={sem.subjects.join(",")}>
+            Sem {sem.semester}
+          </button>
+        ))}
       </div>
     </div>
   </div>
@@ -117,6 +132,28 @@ const cards: CardInfo[] = subjects.map((code) => ({
     font-size: 0.6rem; font-weight: 500; color: var(--text-muted);
   }
 
+  /* ── FILTERS ── */
+  .filters-scroll {
+    overflow-x: auto; padding-bottom: 8px; margin-bottom: -8px;
+    scrollbar-width: none;
+  }
+  .filters-scroll::-webkit-scrollbar { display: none; }
+  .filters {
+    display: flex; gap: 8px; align-items: center; white-space: nowrap;
+  }
+  .filter-btn {
+    background: var(--bg-card); color: var(--text-secondary);
+    border: 1px solid var(--border); border-radius: 20px;
+    padding: 6px 14px; font-size: 0.78rem; font-family: inherit; font-weight: 500;
+    cursor: pointer; transition: all var(--dur) var(--ease);
+  }
+  .filter-btn:hover {
+    background: var(--bg-card-hover); border-color: var(--border-hover); color: var(--text);
+  }
+  .filter-btn.active {
+    background: var(--accent); color: var(--bg); border-color: var(--accent);
+  }
+
   /* ── GRID ── */
   .grid-head { padding: 28px 0 14px; }
   .grid-label {
@@ -184,22 +221,44 @@ const cards: CardInfo[] = subjects.map((code) => ({
   const cards = Array.from(grid.querySelectorAll<HTMLAnchorElement>(".card"));
   const label = document.getElementById("results-count")!;
   const empty = document.getElementById("no-results")!;
+  const filterBtns = Array.from(document.querySelectorAll<HTMLButtonElement>(".filter-btn"));
 
-  function search() {
+  let activeSubjects: string[] | null = null;
+
+  function update() {
     const q = input.value.trim().toUpperCase();
     let n = 0;
     for (const c of cards) {
-      const show = !q || (c.dataset.code || "").includes(q);
+      const code = c.dataset.code || "";
+      const matchSearch = !q || code.includes(q);
+      const matchFilter = !activeSubjects || activeSubjects.includes(code);
+      
+      const show = matchSearch && matchFilter;
       c.style.display = show ? "" : "none";
       if (show) n++;
     }
-    label.textContent = q ? `${n} result${n !== 1 ? "s" : ""}` : "All subjects";
+    label.textContent = q || activeSubjects ? `${n} result${n !== 1 ? "s" : ""}` : "All subjects";
     empty.style.display = n === 0 ? "" : "none";
   }
 
-  input.addEventListener("input", search);
+  filterBtns.forEach(btn => {
+    btn.addEventListener("click", () => {
+      filterBtns.forEach(b => b.classList.remove("active"));
+      btn.classList.add("active");
+      
+      const sem = btn.dataset.sem;
+      if (sem === "all") {
+        activeSubjects = null;
+      } else {
+        activeSubjects = btn.dataset.subjects!.split(",");
+      }
+      update();
+    });
+  });
+
+  input.addEventListener("input", update);
   document.addEventListener("keydown", (e) => {
-    if (e.key === "Escape") { input.value = ""; search(); input.blur(); }
+    if (e.key === "Escape") { input.value = ""; update(); input.blur(); }
     if (e.key === "/" && document.activeElement !== input) { e.preventDefault(); input.focus(); }
   });
 </script>
