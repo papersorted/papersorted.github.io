@@ -46,7 +46,7 @@ const cards: CardInfo[] = subjects.map((code) => ({
     <div class="program-filter">
       <select id="program-select" class="dropdown">
         <option value="none">All Programs</option>
-        {Object.keys(programs).map((prog) => (
+        {Object.keys(programs).sort().map((prog) => (
           <option value={prog}>{prog}</option>
         ))}
       </select>

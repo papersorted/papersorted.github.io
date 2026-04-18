@@ -217,7 +217,7 @@ export const programs = {
     { semester: "IV/I", subjects: ["AICC401", "AIMA431", "AIIN411", "AISP411"] },
     { semester: "IV/II", subjects: ["AIMS401", "AIIN499"] }
   ],
-  "Bachelor of Pharmacy": [
+  "Pharmacy": [
     { semester: "I/I", subjects: ["MATH111", "PHYS104", "PHYS146", "CHEM101", "COMP101", "PHAR112", "PHAR140", "ENGT104"] },
     { semester: "I/II", subjects: ["MATH102", "BIOL102", "BIOLxxx", "CHEM104", "COMP117", "PHAR113", "PHAR141", "PHAR114"] },
     { semester: "II/I", subjects: ["CHEMxxx", "PHAR218", "PHAR213", "PHAR204", "PHAR205", "PHAR219", "PHAR240", "PHAR220", "PHAR241"] },
@@ -226,5 +226,21 @@ export const programs = {
     { semester: "III/II", subjects: ["PHAR323", "MGTS302", "PHAR324", "PHAR325", "PHAR326", "PHAR341", "PHAR327", "PHAR342"] },
     { semester: "IV/I", subjects: ["PHAR428", "PHAR440", "MGTS402", "PHAR429", "PHAR422", "PHAR441", "PHAR402", "PHAR430", "PHAR442"] },
     { semester: "IV/II", subjects: ["PHAR412", "PHAR431", "PHAR443", "PHAR418", "PHAR450"] }
+  ],
+  "Physics (B.Sc.)": [
+    { semester: "I/I", subjects: ["PHYS101", "MATH101", "CHEM101", "BIOL101", "COMP101", "ENGT101", "EDRG101", "ENGG101"] },
+    { semester: "I/II", subjects: ["PHYS102", "MATH103", "CHEM102", "COMP102", "ENGT102", "EDRG102", "STAT101", "ENGG102"] },
+    { semester: "II/I", subjects: ["PHYS201", "PHYS202", "PHYS203", "PHYS204", "MATH201", "MATH204", "STAT201", "PHYS205"] },
+    { semester: "II/II", subjects: ["PHYS211", "PHYS212", "PHYS213", "PHYS214", "MATH217", "STAT221", "MCSC202", "PHYS215"] },
+    { semester: "III/I", subjects: ["PHYS301", "PHYS302", "PHYS303", "PHYS304", "MATH301", "MATH302"] },
+    { semester: "III/II", subjects: ["PHYS311", "PHYS312", "PHYS313", "PHYS314", "PHYS315", "COMP312"] },
+    { semester: "IV/I", subjects: ["PHYS401", "PHYS402", "PHYS403", "PHYS404", "PHYS405", "PHYS406"] },
+    { semester: "IV/II", subjects: ["MGTS402", "PHYS412", "PHYS431", "PHYS421", "PHYS499"] }
+  ],
+  "Physics (M.Sc.)": [
+    { semester: "I/I", subjects: ["PHYS501", "PHYS502", "PHYS503", "PHYS504", "PHYS511", "PHYS541"] },
+    { semester: "I/II", subjects: ["PHYS505", "PHYS506", "PHYS507", "PHYS508", "PHYS512", "PHYS542"] },
+    { semester: "II/I", subjects: ["PHYS601", "PHYS602", "PHYS603", "PHYS611", "PHYS612", "PHYS641"] },
+    { semester: "II/II", subjects: ["PHYS631", "PHYS632", "PHYS633", "PHYS634", "PHYS635", "PHYS636", "PHYS637", "PHYS699"] }
   ]
 };
