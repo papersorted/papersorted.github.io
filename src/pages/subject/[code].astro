@@ -217,9 +217,23 @@ for (const year of sortedYears) {
 
 <script define:vars={{ code }}>
   const RECENT_KEY = 'ku-recent';
-  let history = JSON.parse(localStorage.getItem(RECENT_KEY) || '[]');
-  history = history.filter(c => c !== code);
-  history.unshift(code);
-  if (history.length > 6) history.pop();
-  localStorage.setItem(RECENT_KEY, JSON.stringify(history));
+  const RECENT_VIEW_KEY = 'ku-recent-enabled';
+
+  if (localStorage.getItem(RECENT_VIEW_KEY) === 'false') {
+    localStorage.removeItem(RECENT_KEY);
+  } else {
+    let history;
+    try {
+      const rawHistory = localStorage.getItem(RECENT_KEY);
+      const parsedHistory = rawHistory ? JSON.parse(rawHistory) : [];
+      history = Array.isArray(parsedHistory) ? parsedHistory : [];
+    } catch {
+      localStorage.removeItem(RECENT_KEY);
+      history = [];
+    }
+    history = history.filter(c => c !== code);
+    history.unshift(code);
+    if (history.length > 6) history.pop();
+    localStorage.setItem(RECENT_KEY, JSON.stringify(history));
+  }
 </script>

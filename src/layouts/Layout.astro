@@ -234,6 +234,8 @@ const subjects = Object.keys(manifest);
     <script define:vars={{ subjects }}>
       // Unified Theme Logic
       const THEME_KEY = 'ku-app-theme';
+      const RECENT_KEY = 'ku-recent';
+      const RECENT_VIEW_KEY = 'ku-recent-enabled';
       
       window.setAppTheme = (isLight) => {
         document.documentElement.classList.toggle('light', isLight);
@@ -241,6 +243,17 @@ const subjects = Object.keys(manifest);
         localStorage.setItem('ku-pdf-dark-mode', !isLight ? 'true' : 'false');
         // Dispatch event for other components to react
         window.dispatchEvent(new Event('theme-changed'));
+      };
+
+      window.isRecentViewEnabled = () => localStorage.getItem(RECENT_VIEW_KEY) !== 'false';
+      window.setRecentViewEnabled = (enabled) => {
+        localStorage.setItem(RECENT_VIEW_KEY, enabled ? 'true' : 'false');
+        if (!enabled) {
+          localStorage.removeItem(RECENT_KEY);
+        }
+        window.dispatchEvent(new CustomEvent('recent-view-changed', {
+          detail: { enabled }
+        }));
       };
 
       if (localStorage.getItem(THEME_KEY) === 'light') window.setAppTheme(true);
@@ -253,7 +266,24 @@ const subjects = Object.keys(manifest);
       });
 
       if ('serviceWorker' in navigator) {
-        window.addEventListener('load', () => {
+        window.addEventListener('load', async () => {
+          const isLocalDevHost = ['localhost', '127.0.0.1'].includes(window.location.hostname);
+
+          if (isLocalDevHost) {
+            const registrations = await navigator.serviceWorker.getRegistrations();
+            await Promise.all(registrations.map((registration) => registration.unregister()));
+
+            if ('caches' in window) {
+              const cacheKeys = await caches.keys();
+              await Promise.all(
+                cacheKeys
+                  .filter((key) => key.startsWith('ku-papers-'))
+                  .map((key) => caches.delete(key))
+              );
+            }
+            return;
+          }
+
           navigator.serviceWorker.register('/sw.js').catch((err) => {
             console.error('ServiceWorker registration failed: ', err);
           });
@@ -271,10 +301,28 @@ const subjects = Object.keys(manifest);
       let filtered = [];
       let deepIndexMap = null; // caches the inverted index
 
-      const commands = [
-        { id: 'cmd-home', title: 'Go to Homepage', icon: '<path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>', action: '/' },
-        { id: 'cmd-dark', title: 'Toggle PDF Dark Mode', icon: '<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>', action: 'TOGGLE_DARK' }
-      ];
+      function getCommands() {
+        const isLightTheme = document.documentElement.classList.contains('light');
+        const recentViewEnabled = window.isRecentViewEnabled();
+
+        return [
+          { id: 'cmd-home', title: 'Go to Homepage', icon: '<path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>', action: '/' },
+          {
+            id: 'cmd-theme',
+            title: isLightTheme ? 'Switch to Dark Mode' : 'Switch to Light Mode',
+            icon: isLightTheme
+              ? '<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>'
+              : '<circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>',
+            action: isLightTheme ? 'SET_DARK_MODE' : 'SET_LIGHT_MODE'
+          },
+          {
+            id: 'cmd-recent',
+            title: recentViewEnabled ? 'Disable Recently Viewed' : 'Enable Recently Viewed',
+            icon: '<path d="M12 8v4l3 3"></path><circle cx="12" cy="12" r="9"></circle>',
+            action: 'TOGGLE_RECENT_VIEW'
+          }
+        ];
+      }
 
       async function fetchDeepIndex() {
         if (deepIndexMap !== null) return deepIndexMap;
@@ -304,18 +352,22 @@ const subjects = Object.keys(manifest);
         input.blur();
       }
 
-      function toggleDark() {
-        const KEY = 'ku-pdf-dark-mode';
-        const isDark = localStorage.getItem(KEY) === 'true';
-        localStorage.setItem(KEY, isDark ? 'false' : 'true');
-        const frame = document.querySelector('.pdf-frame');
-        if (frame) frame.classList.toggle('dark-pdf');
+      function setThemeMode(isLight) {
+        window.setAppTheme(isLight);
+        closePalette();
+      }
+
+      function toggleRecentView() {
+        const nextEnabled = !window.isRecentViewEnabled();
+        window.setRecentViewEnabled(nextEnabled);
         closePalette();
       }
 
       function executeAction(item) {
         if (!item) return;
-        if (item.action === 'TOGGLE_DARK') toggleDark();
+        if (item.action === 'SET_DARK_MODE') setThemeMode(false);
+        else if (item.action === 'SET_LIGHT_MODE') setThemeMode(true);
+        else if (item.action === 'TOGGLE_RECENT_VIEW') toggleRecentView();
         else window.location.href = item.action;
       }
 
@@ -326,7 +378,7 @@ const subjects = Object.keys(manifest);
         
         if (startsCmd) {
           const sc = q.slice(1).trim().toLowerCase();
-          items = commands.filter(c => c.title.toLowerCase().includes(sc));
+          items = getCommands().filter(c => c.title.toLowerCase().includes(sc));
         } else if (startsDeep) {
           const dq = q.slice(1).trim().toLowerCase();
           if (dq.length < 3) {
@@ -382,7 +434,7 @@ const subjects = Object.keys(manifest);
           <li class="palette-item ${i === 0 ? 'active' : ''}" data-idx="${i}">
             <svg class="icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${item.icon}</svg>
             <span class="mono">${item.title}</span>
-            ${item.action === 'TOGGLE_DARK' ? '<span style="margin-left:auto;font-size:0.7rem;color:#78736d">Action</span>' : ''}
+            ${item.action && !String(item.action).startsWith('/') ? '<span style="margin-left:auto;font-size:0.7rem;color:#78736d">Action</span>' : ''}
           </li>
         `).join('');
       }
@@ -408,6 +460,14 @@ const subjects = Object.keys(manifest);
       resultsUL.addEventListener('click', (e) => {
         const li = e.target.closest('li');
         if (li) executeAction(filtered[li.dataset.idx]);
+      });
+
+      window.addEventListener('theme-changed', () => {
+        if (isOpen) renderResults(input.value);
+      });
+
+      window.addEventListener('recent-view-changed', () => {
+        if (isOpen) renderResults(input.value);
       });
 
       document.addEventListener('keydown', (e) => {

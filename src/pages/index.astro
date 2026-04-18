@@ -12,20 +12,40 @@ interface CardInfo {
   count: number;
 }
 
+interface SemesterFilterInfo {
+  semester: string;
+  label: string;
+  subjects: string[];
+}
+
 const cards: CardInfo[] = subjects.map((code) => ({
   code,
   count: data[code].length,
 }));
 
-// Extract unique years from ALL dates across subjects
-const years = [...new Set(
-  Object.values(data).flatMap((papers: any) => 
-    papers.map((p: any) => {
-      const parts = p.date.trim().split(' ');
-      return parts[parts.length - 1]; // Grab the last word (the year)
-    })
-  )
-)].filter(y => /^\d{4}$/.test(y)).sort((a,b) => parseInt(b) - parseInt(a));
+const availableSubjects = new Set(subjects);
+
+function uniqueAvailableSubjects(subjectCodes: string[]) {
+  return Array.from(new Set(subjectCodes)).filter((subject) => availableSubjects.has(subject));
+}
+
+function formatSemesterLabel(value: string) {
+  const [year, semester] = value.split("/");
+  if (!year || !semester) return `Semester ${value}`;
+  return `Year ${year} · Semester ${semester}`;
+}
+
+const programFilters: Record<string, SemesterFilterInfo[]> = Object.fromEntries(
+  Object.entries(programs).map(([programName, semesters]) => [
+    programName,
+    semesters.map((semester) => ({
+      semester: semester.semester,
+      label: formatSemesterLabel(semester.semester),
+      subjects: uniqueAvailableSubjects(semester.subjects),
+    })),
+  ]),
+);
+
 ---
 
 <Layout title="Exam Papers">
@@ -59,8 +79,9 @@ const years = [...new Set(
 
   <!-- Recently Viewed -->
   <div class="container anim" id="recent-container" style="display: none; margin-top: 28px; animation-delay:190ms">
-    <div class="grid-head" style="padding: 0 0 10px 0;">
+    <div class="grid-head" style="padding: 0 0 10px 0; display: flex; align-items: center; justify-content: space-between;">
       <span class="grid-label">Recently Viewed</span>
+      <button id="clear-recent" class="clear-btn" title="Clear history">Clear</button>
     </div>
     <div class="recent-scroll" id="recent-carousel"></div>
   </div>
@@ -70,24 +91,27 @@ const years = [...new Set(
     <div class="program-filter">
       <select id="program-select" class="dropdown">
         <option value="none">All Programs</option>
-        {Object.keys(programs).sort().map((prog) => (
+        {Object.keys(programFilters).sort().map((prog) => (
           <option value={prog}>{prog}</option>
         ))}
-      </select>
-
-      <select id="year-select" class="dropdown" style="max-width: 140px;">
-        <option value="all">All Years</option>
-        {years.map(y => <option value={y}>{y}</option>)}
       </select>
     </div>
 
     <div class="filters-scroll" id="semester-wrapper" style="display:none; margin-top: 12px;">
       <div class="filters" id="semester-filters">
-        <button class="filter-btn active" data-sem="all">All Semesters</button>
-        {Object.entries(programs).map(([progName, sems]) => (
+        <button class="filter-btn active" type="button" data-sem="all" data-label="All Semesters">All Semesters</button>
+        {Object.entries(programFilters).map(([progName, sems]) => (
           sems.map((sem) => (
-             <button class="filter-btn sem-btn" style="display:none;" data-prog={progName} data-sem={sem.semester} data-subjects={sem.subjects.join(",")}>
-               Sem {sem.semester}
+             <button
+               class="filter-btn sem-btn"
+               type="button"
+               style="display:none;"
+               data-prog={progName}
+               data-sem={sem.semester}
+               data-label={sem.label}
+               data-subjects={sem.subjects.join(",")}
+             >
+               {sem.label}
              </button>
           ))
         ))}
@@ -117,8 +141,7 @@ const years = [...new Set(
       ))}
     </div>
 
-    <!-- Batch Results View (Initially hidden) -->
-    <div id="batch-results" style="display:none;" class="batch-list"></div>
+
 
     <div class="empty" id="no-results" style="display:none">
       <p>No subjects match your search.</p>
@@ -294,6 +317,15 @@ const years = [...new Set(
     font-size: 0.85rem; color: var(--text-muted);
   }
 
+  .clear-btn {
+    background: none; border: none; outline: none;
+    font-size: 0.65rem; font-weight: 600; text-transform: uppercase;
+    letter-spacing: 0.05em; color: var(--text-faint);
+    cursor: pointer; transition: color var(--dur) var(--ease);
+    padding: 4px 8px; margin-right: -8px;
+  }
+  .clear-btn:hover { color: var(--accent); }
+
   /* ── FOOTER ── */
   .foot { border-top: 1px solid var(--border); padding: 28px 0; }
   .foot-inner {
@@ -312,112 +344,163 @@ const years = [...new Set(
     .card { height: 76px; padding: 13px; }
   }
 
-  /* ── BATCH LIST ── */
-  .batch-list { display: flex; flex-direction: column; gap: 24px; padding-bottom: 80px; }
-  .batch-group { animation: enter 0.4s var(--ease) both; }
-  .batch-code { display: block; font-size: 0.75rem; font-weight: 600; color: var(--accent); margin-bottom: 8px; font-family: 'JetBrains Mono', monospace; }
-  .batch-papers { display: flex; flex-wrap: wrap; gap: 8px; }
-  .batch-paper {
-    background: var(--bg-card); border: 1px solid var(--border); border-radius: 6px;
-    padding: 10px 14px; color: var(--text-secondary); font-size: 0.82rem; font-weight: 500;
-    transition: all var(--dur) var(--ease);
-  }
-  .batch-paper:hover { background: var(--bg-card-hover); border-color: var(--border-hover); color: var(--text); transform: translateY(-1px); }
+
 </style>
 
 <script>
   const input = document.getElementById("search-input") as HTMLInputElement;
   const grid = document.getElementById("subject-grid")!;
   const cards = Array.from(grid.querySelectorAll<HTMLElement>(".card"));
+  const cardsByCode = new Map(cards.map((card) => [card.dataset.code || "", card]));
   const label = document.getElementById("results-count")!;
   const empty = document.getElementById("no-results")!;
   const filterBtns = Array.from(document.querySelectorAll<HTMLButtonElement>(".filter-btn"));
   
   const progSelect = document.getElementById("program-select") as HTMLSelectElement;
-  const yearSelect = document.getElementById("year-select") as HTMLSelectElement;
   const semWrapper = document.getElementById("semester-wrapper")!;
   const semBtns = Array.from(document.querySelectorAll<HTMLButtonElement>(".sem-btn"));
   const allSemBtn = document.querySelector<HTMLButtonElement>("[data-sem='all']")!;
-  const batchContainer = document.getElementById("batch-results")!;
 
+  const NO_PROGRAM = "none";
+  const ALL_SEMESTERS = "all";
   let activeSubjects: string[] | null = null;
-  const FULL_DATA = (window as any).MANIFEST_DATA = data; // Leak to window for batch access
+  let activeFilterLabel = "";
   const FAV_KEY = 'ku-favorites';
-  let favorites: Set<string> = new Set(JSON.parse(localStorage.getItem(FAV_KEY) || '[]'));
+
+  function readStoredList(key: string) {
+    try {
+      const rawValue = localStorage.getItem(key);
+      if (!rawValue) return [];
+      const parsedValue = JSON.parse(rawValue);
+      return Array.isArray(parsedValue) ? parsedValue : [];
+    } catch {
+      localStorage.removeItem(key);
+      return [];
+    }
+  }
+
+  let favorites: Set<string> = new Set(
+    readStoredList(FAV_KEY).filter((value): value is string => typeof value === "string" && value.length > 0)
+  );
 
   function saveStorage() {
     localStorage.setItem(FAV_KEY, JSON.stringify(Array.from(favorites)));
   }
 
+  function getSubjectsForButton(btn: HTMLButtonElement) {
+    return (btn.dataset.subjects || "").split(",").filter(Boolean);
+  }
+
   function renderCollectionStates() {
-    cards.forEach(c => {
-      const code = c.dataset.code || "";
-      c.classList.toggle('favorited', favorites.has(code));
-      if (favorites.has(code)) grid.prepend(c);
-      else grid.appendChild(c);
+    const favoriteCards: HTMLElement[] = [];
+    const regularCards: HTMLElement[] = [];
+
+    cards.forEach((card) => {
+      const code = card.dataset.code || "";
+      const isFavorite = favorites.has(code);
+      card.classList.toggle('favorited', isFavorite);
+      if (isFavorite) favoriteCards.push(card);
+      else regularCards.push(card);
     });
-    // Final Z-order for favorites
-    const favCards = cards.filter(c => favorites.has(c.dataset.code || ""));
-    cards.forEach(c => { if (!favorites.has(c.dataset.code||"")) grid.appendChild(c); });
-    favCards.forEach(c => grid.prepend(c)); 
+
+    [...favoriteCards, ...regularCards].forEach((card) => grid.appendChild(card));
   }
 
-  // Setup Collectors (Main Grid)
-  function attachCollectorListeners(cardElement) {
-    const star = cardElement.querySelector('.star-btn');
-    const code = cardElement.dataset.code || "";
+  function toggleFavorite(code: string) {
+    if (!code) return;
+    if (favorites.has(code)) favorites.delete(code);
+    else favorites.add(code);
+    saveStorage();
+    renderCollectionStates();
+    renderRecents();
+    update();
+  }
 
-    star?.addEventListener('click', (e) => {
-      e.preventDefault(); e.stopPropagation();
-      if (favorites.has(code)) favorites.delete(code); else favorites.add(code);
-      saveStorage(); renderCollectionStates(); update();
+  function attachFavoriteListener(button: HTMLButtonElement) {
+    button.addEventListener('click', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      const card = button.closest<HTMLElement>('.card');
+      toggleFavorite(card?.dataset.code || "");
     });
   }
 
-  cards.forEach(c => attachCollectorListeners(c));
+  cards.forEach((card) => {
+    const starButton = card.querySelector<HTMLButtonElement>('.star-btn');
+    if (starButton) attachFavoriteListener(starButton);
+  });
   renderCollectionStates();
 
-  // Load Recents
   const recentContainer = document.getElementById("recent-container")!;
   const recentCarousel = document.getElementById("recent-carousel")!;
   const RECENT_KEY = 'ku-recent';
+  const RECENT_VIEW_KEY = 'ku-recent-enabled';
+
+  function isRecentViewEnabled() {
+    return localStorage.getItem(RECENT_VIEW_KEY) !== 'false';
+  }
   
   function renderRecents() {
-    const history = JSON.parse(localStorage.getItem(RECENT_KEY) || '[]');
-    if (history.length === 0) return;
-    
-    recentContainer.style.display = "";
     recentCarousel.innerHTML = "";
-    
-    history.forEach(code => {
-      const match = cards.find(c => c.dataset.code === code);
-      if (match) {
-        const clone = match.cloneNode(true);
-        clone.classList.remove('anim');
-        clone.style.animationDelay = '0ms';
-        recentCarousel.appendChild(clone);
+
+    if (!isRecentViewEnabled()) {
+      localStorage.removeItem(RECENT_KEY);
+      recentContainer.style.display = "none";
+      return;
+    }
+
+    const history = readStoredList(RECENT_KEY);
+    const sanitizedHistory = history.filter((code, index) => {
+      return typeof code === "string" && code && cardsByCode.has(code) && history.indexOf(code) === index;
+    }).slice(0, 6);
+
+    if (sanitizedHistory.length !== history.length) {
+      localStorage.setItem(RECENT_KEY, JSON.stringify(sanitizedHistory));
+    }
+
+    if (sanitizedHistory.length === 0) {
+      recentContainer.style.display = "none";
+      return;
+    }
+
+    recentContainer.style.display = "";
+
+    sanitizedHistory.forEach((code) => {
+      const sourceCard = cardsByCode.get(code);
+      if (!sourceCard) return;
+
+      const clone = sourceCard.cloneNode(true) as HTMLElement;
+      clone.classList.remove('anim');
+      clone.style.animationDelay = '0ms';
+      clone.style.display = '';
+      recentCarousel.appendChild(clone);
+
+      const starButton = clone.querySelector<HTMLButtonElement>('.star-btn');
+      if (starButton) {
+        attachFavoriteListener(starButton);
       }
     });
-
-    const clones = recentCarousel.querySelectorAll('.star-btn');
-    clones.forEach(btn => attachStarListeners(btn));
   }
   renderRecents();
 
-  function update() {
-    const q = input.value.trim().toUpperCase();
-    const year = yearSelect.value;
-    
-    if (year !== "all") {
-      grid.style.display = "none";
-      batchContainer.style.display = "";
-      renderBatchResults(year, q);
+  window.addEventListener("recent-view-changed", () => {
+    renderRecents();
+  });
+
+  function updateResultsLabel(count: number, hasQuery: boolean) {
+    if (!hasQuery && !activeFilterLabel) {
+      label.textContent = "All subjects";
       return;
     }
-    
-    grid.style.display = "";
-    batchContainer.style.display = "none";
 
+    const noun = hasQuery ? "result" : "subject";
+    const baseLabel = `${count} ${noun}${count !== 1 ? "s" : ""}`;
+    label.textContent = activeFilterLabel ? `${baseLabel} in ${activeFilterLabel}` : baseLabel;
+  }
+
+  function update() {
+    const q = input.value.trim().toUpperCase();
+    
     let n = 0;
     for (const c of cards) {
       const code = c.dataset.code || "";
@@ -428,74 +511,72 @@ const years = [...new Set(
       c.style.display = show ? "" : "none";
       if (show) n++;
     }
-    label.textContent = q || activeSubjects ? `${n} result${n !== 1 ? "s" : ""}` : "All subjects";
+    updateResultsLabel(n, Boolean(q));
     empty.style.display = n === 0 ? "" : "none";
   }
 
-  function renderBatchResults(year: string, q: string) {
-    let html = '';
-    let foundCount = 0;
-
-    Object.keys(FULL_DATA).sort().forEach(code => {
-      if (q && !code.includes(q)) return;
-      if (activeSubjects && !activeSubjects.includes(code)) return;
-
-      const matchingPapers = FULL_DATA[code].filter(p => p.date.includes(year));
-      if (matchingPapers.length > 0) {
-        foundCount++;
-        html += `
-          <div class="batch-group">
-            <span class="batch-code">${code}</span>
-            <div class="batch-papers">
-              ${matchingPapers.map(p => `
-                <a href="/viewer/${code}/${encodeURIComponent(p.file)}/" class="batch-paper">${p.date}</a>
-              `).join('')}
-            </div>
-          </div>
-        `;
-      }
-    });
-
-    batchContainer.innerHTML = html;
-    label.textContent = `${foundCount} subject${foundCount !== 1 ? 's' : ''} in ${year}`;
-    empty.style.display = foundCount === 0 ? "" : "none";
+  function setActiveButton(button: HTMLButtonElement) {
+    filterBtns.forEach((filterButton) => filterButton.classList.remove("active"));
+    button.classList.add("active");
   }
 
-  yearSelect.addEventListener("change", update);
+  function applySemesterFilter(button: HTMLButtonElement) {
+    setActiveButton(button);
+    const selectedProgram = progSelect.value;
+    const selectedSubjects = getSubjectsForButton(button);
 
-  progSelect.addEventListener("change", () => {
-    const prog = progSelect.value;
-    if (prog === "none") {
+    if (button.dataset.sem === ALL_SEMESTERS) {
+      activeSubjects = selectedSubjects.length > 0 ? selectedSubjects : null;
+      activeFilterLabel = selectedProgram === NO_PROGRAM ? "" : selectedProgram;
+    } else {
+      activeSubjects = selectedSubjects;
+      activeFilterLabel = selectedProgram === NO_PROGRAM
+        ? (button.dataset.label || button.textContent || "").trim()
+        : `${selectedProgram} · ${(button.dataset.label || button.textContent || "").trim()}`;
+    }
+
+    update();
+  }
+
+  function syncSemesterButtons(programName: string) {
+    const visibleButtons: HTMLButtonElement[] = [];
+
+    semBtns.forEach((button) => {
+      const isVisible = button.dataset.prog === programName;
+      button.style.display = isVisible ? "" : "none";
+      if (isVisible) visibleButtons.push(button);
+    });
+
+    allSemBtn.dataset.subjects = Array.from(
+      new Set(visibleButtons.flatMap((button) => getSubjectsForButton(button)))
+    ).join(",");
+  }
+
+  function syncProgramSelection() {
+    const programName = progSelect.value;
+
+    if (programName === NO_PROGRAM) {
       semWrapper.style.display = "none";
+      semBtns.forEach((button) => {
+        button.style.display = "none";
+      });
+      allSemBtn.dataset.subjects = "";
       activeSubjects = null;
+      activeFilterLabel = "";
+      setActiveButton(allSemBtn);
+      update();
     } else {
       semWrapper.style.display = "";
-      let allSubsGradiant: string[] = [];
-      semBtns.forEach(btn => {
-        const match = btn.dataset.prog === prog;
-        btn.style.display = match ? "" : "none";
-        if (match) {
-           allSubsGradiant.push(...btn.dataset.subjects!.split(","));
-        }
-      });
-      allSemBtn.dataset.subjects = allSubsGradiant.join(",");
-      allSemBtn.click(); // Trigger the click to apply the filter
+      syncSemesterButtons(programName);
+      applySemesterFilter(allSemBtn);
     }
-    update();
-  });
+  }
 
-  filterBtns.forEach(btn => {
-    btn.addEventListener("click", () => {
-      filterBtns.forEach(b => b.classList.remove("active"));
-      btn.classList.add("active");
-      
-      const sem = btn.dataset.sem;
-      if (sem === "all") {
-         activeSubjects = btn.dataset.subjects ? btn.dataset.subjects.split(",") : null;
-      } else {
-         activeSubjects = btn.dataset.subjects!.split(",");
-      }
-      update();
+  progSelect.addEventListener("change", syncProgramSelection);
+
+  filterBtns.forEach((button) => {
+    button.addEventListener("click", () => {
+      applySemesterFilter(button);
     });
   });
 
@@ -504,4 +585,6 @@ const years = [...new Set(
     if (e.key === "Escape") { input.value = ""; update(); input.blur(); }
     if (e.key === "/" && document.activeElement !== input) { e.preventDefault(); input.focus(); }
   });
+
+  syncProgramSelection();
 </script>
