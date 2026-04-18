@@ -39,6 +39,9 @@ const pdfUrl = `${base}papers/${code}/${decoded}`;
         <a href={pdfUrl} target="_blank" rel="noopener" class="bar-btn" title="Open in new tab">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
         </a>
+        <button id="dark-toggle" class="bar-btn" title="Toggle Dark Reader">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
+        </button>
         <a href={pdfUrl} download={decoded} class="dl-btn">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
           <span>Download</span>
@@ -52,6 +55,21 @@ const pdfUrl = `${base}papers/${code}/${decoded}`;
     </div>
   </div>
 </Layout>
+
+<script>
+  const toggle = document.getElementById('dark-toggle');
+  const frame = document.querySelector('.pdf-frame');
+  const KEY = 'ku-pdf-dark-mode';
+  
+  if (localStorage.getItem(KEY) === 'true') {
+    frame?.classList.add('dark-pdf');
+  }
+
+  toggle?.addEventListener('click', () => {
+    frame?.classList.toggle('dark-pdf');
+    localStorage.setItem(KEY, frame?.classList.contains('dark-pdf') ? 'true' : 'false');
+  });
+</script>
 
 <style>
   .viewer-layout {
@@ -108,7 +126,8 @@ const pdfUrl = `${base}papers/${code}/${decoded}`;
   .dl-btn:hover { opacity: 0.9; transform: translateY(-1px); }
 
   .pdf-area { flex: 1; overflow: hidden; background: #0e0e0e; }
-  .pdf-frame { width: 100%; height: 100%; border: none; }
+  .pdf-frame { width: 100%; height: 100%; border: none; background: #fff; transition: filter var(--dur) var(--ease); }
+  .pdf-frame.dark-pdf { filter: invert(0.92) hue-rotate(180deg) brightness(1.05) contrast(1.05); }
 
   @media (max-width: 640px) {
     .viewer-bar { padding: 0 12px; }

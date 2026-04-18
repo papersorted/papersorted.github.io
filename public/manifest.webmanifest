@@ -1,0 +1,17 @@
+{
+  "name": "KU Exam Archives",
+  "short_name": "KU Papers",
+  "description": "Browse and download past examination papers by subject code.",
+  "start_url": "/",
+  "display": "standalone",
+  "theme_color": "#2b2b2b",
+  "background_color": "#2b2b2b",
+  "icons": [
+    {
+      "src": "/favicon.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}

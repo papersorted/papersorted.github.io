@@ -90,7 +90,8 @@ const cards: CardInfo[] = subjects.map((code) => ({
     <div class="container foot-inner">
       <span>KU Exam Archive</span>
       <span class="foot-dot">·</span>
-        </div>
+      <a href="https://github.com/papersorted/papersorted.github.io/issues/new" target="_blank" rel="noopener" class="foot-link">Contribute Papers</a>
+    </div>
   </footer>
 </Layout>
 
@@ -229,10 +230,12 @@ const cards: CardInfo[] = subjects.map((code) => ({
   /* ── FOOTER ── */
   .foot { border-top: 1px solid var(--border); padding: 28px 0; }
   .foot-inner {
-    display: flex; justify-content: center; gap: 6px;
-    font-size: 0.72rem; color: var(--text-faint); font-weight: 500;
+    display: flex; justify-content: center; gap: 8px;
+    font-size: 0.75rem; color: var(--text-faint); font-weight: 500;
   }
   .foot-dot { opacity: 0.4; }
+  .foot-link { color: var(--text-muted); transition: color var(--dur) var(--ease); }
+  .foot-link:hover { color: var(--accent); }
 
   @media (max-width: 640px) {
     .hero { padding: 48px 0 8px; }

@@ -93,6 +93,14 @@ for (const year of sortedYears) {
       ))}
     </div>
 
+    <div class="contribute-block anim" style={`animation-delay:${120 + sortedYears.length * 60 + 30}ms`}>
+      <p>Missing a paper?</p>
+      <a href={`https://github.com/papersorted/papersorted.github.io/issues/new?title=[New+Paper]+${code}&body=Please+attach+the+PDF+file+for+${code}+here.`} target="_blank" rel="noopener" class="contribute-btn">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+        Submit PDF
+      </a>
+    </div>
+
     <div class="back-section anim" style={`animation-delay:${120 + sortedYears.length * 60 + 60}ms`}>
       <a href={base} class="back-link">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
@@ -170,8 +178,28 @@ for (const year of sortedYears) {
   }
   .paper:hover .paper-arrow { color: var(--accent); transform: translateX(3px); }
 
+  /* ── Contribute ── */
+  .contribute-block {
+    margin: 32px 0 16px; padding: 24px;
+    background: var(--bg-card); border: 1px dashed var(--border-hover);
+    border-radius: var(--r); text-align: center;
+  }
+  .contribute-block p {
+    font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 12px;
+  }
+  .contribute-btn {
+    display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+    padding: 8px 16px; background: rgba(255,255,255,0.05); color: var(--text);
+    border: 1px solid var(--border); border-radius: var(--r-sm);
+    font-size: 0.8rem; font-weight: 500; font-family: inherit;
+    cursor: pointer; transition: all var(--dur) var(--ease);
+  }
+  .contribute-btn:hover {
+    background: var(--accent); color: var(--bg); border-color: var(--accent);
+  }
+
   /* ── Back ── */
-  .back-section { padding: 24px 0 80px; }
+  .back-section { padding: 12px 0 80px; }
   .back-link {
     display: inline-flex; align-items: center; gap: 6px;
     font-size: 0.82rem; font-weight: 500; color: var(--text-muted);
