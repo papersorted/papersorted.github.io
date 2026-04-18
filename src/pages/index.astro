@@ -71,7 +71,7 @@ const programFilters: Record<string, SemesterFilterInfo[]> = Object.fromEntries(
     <div class="search-section anim" style="animation-delay:180ms">
       <div class="search-box">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
-        <input type="text" id="search-input" placeholder="Search subjects…" autocomplete="off" spellcheck="false" />
+        <input type="text" id="search-input" placeholder="Search by code or subject area…" autocomplete="off" spellcheck="false" />
         <kbd>/</kbd>
       </div>
     </div>
@@ -348,10 +348,16 @@ const programFilters: Record<string, SemesterFilterInfo[]> = Object.fromEntries(
 </style>
 
 <script>
+  import { buildSubjectSearchIndex, scoreSubjectSearch } from "../lib/subjectSearch.ts";
+
   const input = document.getElementById("search-input") as HTMLInputElement;
   const grid = document.getElementById("subject-grid")!;
   const cards = Array.from(grid.querySelectorAll<HTMLElement>(".card"));
   const cardsByCode = new Map(cards.map((card) => [card.dataset.code || "", card]));
+  const subjectSearchSeedNode = document.getElementById("subject-search-data");
+  const subjectSearchSeeds = subjectSearchSeedNode?.textContent ? JSON.parse(subjectSearchSeedNode.textContent) : [];
+  const subjectSearchIndex = buildSubjectSearchIndex(subjectSearchSeeds);
+  const searchEntriesByCode = new Map(subjectSearchIndex.map((entry) => [entry.code, entry]));
   const label = document.getElementById("results-count")!;
   const empty = document.getElementById("no-results")!;
   const filterBtns = Array.from(document.querySelectorAll<HTMLButtonElement>(".filter-btn"));
@@ -514,20 +520,37 @@ const programFilters: Record<string, SemesterFilterInfo[]> = Object.fromEntries(
   }
 
   function update() {
-    const q = input.value.trim().toUpperCase();
-    
-    let n = 0;
+    const q = input.value.trim();
+    const matches: { card: HTMLElement; code: string; score: number }[] = [];
+
     for (const c of cards) {
       const code = c.dataset.code || "";
-      const matchSearch = !q || code.includes(q);
       const matchFilter = !activeSubjects || activeSubjects.includes(code);
-      
-      const show = matchSearch && matchFilter;
+      const searchEntry = searchEntriesByCode.get(code);
+      const resolvedScore = q && searchEntry ? scoreSubjectSearch(searchEntry, q) : q ? -1 : 0;
+      const show = matchFilter && (!q || resolvedScore >= 0);
       c.style.display = show ? "" : "none";
-      if (show) n++;
+      if (show) matches.push({ card: c, code, score: resolvedScore });
     }
-    updateResultsLabel(n, Boolean(q));
-    empty.style.display = n === 0 ? "" : "none";
+
+    if (q) {
+      matches
+        .sort((left, right) => {
+          if (right.score !== left.score) return right.score - left.score;
+          if (favorites.has(left.code) !== favorites.has(right.code)) {
+            return Number(favorites.has(right.code)) - Number(favorites.has(left.code));
+          }
+          return left.code.localeCompare(right.code);
+        })
+        .forEach(({ card }) => {
+          grid.appendChild(card);
+        });
+    } else {
+      renderCollectionStates();
+    }
+
+    updateResultsLabel(matches.length, Boolean(q));
+    empty.style.display = matches.length === 0 ? "" : "none";
   }
 
   function setActiveButton(button: HTMLButtonElement) {

@@ -1,5 +1,6 @@
 ---
 import manifest from "../data/manifest.json";
+import { buildSubjectSearchSeeds } from "../data/searchAliases.ts";
 
 interface Props {
   title: string;
@@ -13,7 +14,9 @@ const {
   image = "/favicon.png"
 } = Astro.props;
 
-const subjects = Object.keys(manifest);
+const subjects = Object.keys(manifest).sort();
+const subjectSearchSeeds = buildSubjectSearchSeeds(subjects);
+const subjectSearchSeedJson = JSON.stringify(subjectSearchSeeds).replace(/</g, "\\u003c");
 ---
 
 <!doctype html>
@@ -269,6 +272,7 @@ const subjects = Object.keys(manifest);
     <slot />
 
     <!-- Command Palette -->
+    <script id="subject-search-data" type="application/json" set:html={subjectSearchSeedJson}></script>
     <style is:inline>
       .palette-overlay {
         position: fixed; inset: 0; z-index: 10000;
@@ -320,17 +324,22 @@ const subjects = Object.keys(manifest);
       <div class="palette-modal" id="cmd-modal">
         <div class="palette-input-wrap">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
-          <input type="text" id="cmd-input" placeholder="Jump to subject, type > for actions, or ? for Deep Search..." autocomplete="off" spellcheck="false" />
+          <input type="text" id="cmd-input" placeholder="Jump to a subject or area, type > for actions, or ? for Deep Search..." autocomplete="off" spellcheck="false" />
         </div>
         <ul class="palette-results" id="cmd-results"></ul>
       </div>
     </div>
     
-    <script define:vars={{ subjects }}>
+    <script>
+      import { buildSubjectSearchIndex, searchSubjectEntries } from "../lib/subjectSearch.ts";
+
       // Unified Theme Logic
       const THEME_KEY = 'ku-app-theme';
       const RECENT_KEY = 'ku-recent';
       const RECENT_VIEW_KEY = 'ku-recent-enabled';
+      const subjectSearchSeedNode = document.getElementById('subject-search-data');
+      const subjectSearchSeeds = subjectSearchSeedNode?.textContent ? JSON.parse(subjectSearchSeedNode.textContent) : [];
+      const subjectSearchIndex = buildSubjectSearchIndex(subjectSearchSeeds);
       
       window.setAppTheme = (isLight) => {
         document.documentElement.classList.toggle('light', isLight);
@@ -515,14 +524,21 @@ const subjects = Object.keys(manifest);
             };
           });
         } else {
-          const term = q.replace(/\s+/g, '').toUpperCase();
-          const matches = subjects.filter(s => s.includes(term)).slice(0, 50);
-          items = matches.map(m => ({ title: m, action: `/subject/${m}/`, icon: '<path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/>' }));
+          items = searchSubjectEntries(subjectSearchIndex, q, 50).map((entry) => ({
+            title: entry.code,
+            action: `/subject/${entry.code}/`,
+            icon: '<path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/>'
+          }));
         }
 
         filtered = items;
         activeIndex = 0;
-        
+
+        if (items.length === 0) {
+          resultsUL.innerHTML = '<li class="palette-item" style="justify-content:center"><span class="mono" style="color:var(--text-faint); font-size:0.85rem;">No subjects match that search.</span></li>';
+          return;
+        }
+
         resultsUL.innerHTML = items.map((item, i) => `
           <li class="palette-item ${i === 0 ? 'active' : ''}" data-idx="${i}">
             <svg class="icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${item.icon}</svg>
@@ -541,8 +557,8 @@ const subjects = Object.keys(manifest);
       input.addEventListener('input', (e) => renderResults(e.target.value));
 
       input.addEventListener('keydown', (e) => {
-        if (e.key === 'ArrowDown') { e.preventDefault(); activeIndex = (activeIndex + 1) % filtered.length; updateActive(); }
-        if (e.key === 'ArrowUp') { e.preventDefault(); activeIndex = (activeIndex - 1 + filtered.length) % filtered.length; updateActive(); }
+        if (e.key === 'ArrowDown' && filtered.length > 0) { e.preventDefault(); activeIndex = (activeIndex + 1) % filtered.length; updateActive(); }
+        if (e.key === 'ArrowUp' && filtered.length > 0) { e.preventDefault(); activeIndex = (activeIndex - 1 + filtered.length) % filtered.length; updateActive(); }
         if (e.key === 'Enter') { e.preventDefault(); executeAction(filtered[activeIndex]); }
       });
 
