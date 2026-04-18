@@ -216,5 +216,15 @@ export const programs = {
     { semester: "III/II", subjects: ["AICC351", "AICL311", "AIMA331", "AISM311", "AISP322"] },
     { semester: "IV/I", subjects: ["AICC401", "AIMA431", "AIIN411", "AISP411"] },
     { semester: "IV/II", subjects: ["AIMS401", "AIIN499"] }
+  ],
+  "Bachelor of Pharmacy": [
+    { semester: "I/I", subjects: ["MATH111", "PHYS104", "PHYS146", "CHEM101", "COMP101", "PHAR112", "PHAR140", "ENGT104"] },
+    { semester: "I/II", subjects: ["MATH102", "BIOL102", "BIOLxxx", "CHEM104", "COMP117", "PHAR113", "PHAR141", "PHAR114"] },
+    { semester: "II/I", subjects: ["CHEMxxx", "PHAR218", "PHAR213", "PHAR204", "PHAR205", "PHAR219", "PHAR240", "PHAR220", "PHAR241"] },
+    { semester: "II/II", subjects: ["PHAR214", "PHAR215", "PHAR221", "PHAR217", "PHAR222", "PHAR223", "PHAR224", "PHAR242", "CHEM212", "CHEM213"] },
+    { semester: "III/I", subjects: ["PHAR318", "PHAR317", "PHAR319", "PHAR320", "PHAR312", "PHAR321", "INAN301", "INAN302", "PHAR322", "PHAR340"] },
+    { semester: "III/II", subjects: ["PHAR323", "MGTS302", "PHAR324", "PHAR325", "PHAR326", "PHAR341", "PHAR327", "PHAR342"] },
+    { semester: "IV/I", subjects: ["PHAR428", "PHAR440", "MGTS402", "PHAR429", "PHAR422", "PHAR441", "PHAR402", "PHAR430", "PHAR442"] },
+    { semester: "IV/II", subjects: ["PHAR412", "PHAR431", "PHAR443", "PHAR418", "PHAR450"] }
   ]
 };
