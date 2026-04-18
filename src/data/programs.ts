@@ -66,5 +66,39 @@ export const programs = {
       semester: "IV/II",
       subjects: ["CIEG449", "CIEG499"]
     }
+  ],
+  "Geomatics Engineering": [
+    {
+      semester: "I/I",
+      subjects: ["MATH101", "PHYS101", "CHEM101", "COMP102", "EDRG101", "ENGG111", "ENGG101"]
+    },
+    {
+      semester: "I/II",
+      subjects: ["MATH104", "PHYS102", "COMP116", "EDRG102", "ENGG102", "ENGG112", "ENGT105", "ENVE101"]
+    },
+    {
+      semester: "II/I",
+      subjects: ["GEOM201", "GEOM202", "COMP204"]
+    },
+    {
+      semester: "II/II",
+      subjects: ["GEOM204", "GEOM206", "MATH207", "MATH208", "MCSC202"]
+    },
+    {
+      semester: "III/I",
+      subjects: ["GEOM303", "GEOM314", "GEOM316", "GEOM317", "GEOM318", "MGTS301", "MGTS403"]
+    },
+    {
+      semester: "III/II",
+      subjects: ["GEOM304", "GEOM306", "GEOM307", "GEOM313", "GEOM315", "GEOM319"]
+    },
+    {
+      semester: "IV/I",
+      subjects: ["GEOM401", "GEOM402", "GEOM405", "GEOM406", "GEOM411", "GEOM415", "GEOM417"]
+    },
+    {
+      semester: "IV/II",
+      subjects: ["GEOM404", "GEOM412", "GEOM410"]
+    }
   ]
 };
