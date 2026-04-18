@@ -256,5 +256,15 @@ export const programs = {
     { semester: "III/II", subjects: ["EPEG301", "EEEG320", "ETEG303", "ETEG321", "ETEG305", "ETEG323", "EEEG321", "ETEG319"] },
     { semester: "IV/I", subjects: ["MGTS403", "ETEG402", "ETEG408", "ETEG422", "ETEG403", "ETEG419"] },
     { semester: "IV/II", subjects: ["MGTS402", "ETEG417", "ETEG432", "ETEG405", "ETEG435", "ETEG436"] }
+  ],
+  "Electrical & Electronics Engineering (Power & Control)": [
+    { semester: "I/I", subjects: ["MATH101", "PHYS101", "CHEM101", "COMP102", "ENGG111", "EDRG101", "ENGG101"] },
+    { semester: "I/II", subjects: ["MATH104", "PHYS102", "ENVE101", "COMP116", "ENGT105", "ENGG112", "EDRG102", "ENGG102"] },
+    { semester: "II/I", subjects: ["MATH207", "EEEG202", "EEEG211", "EEEG207", "EEEG213", "EEEG217", "EEEG218", "EEEG205"] },
+    { semester: "II/II", subjects: ["MATH208", "MCSC202", "EEEG214", "EEEG221", "EEEG215", "EEEG219", "EEEG222", "EEEG212"] },
+    { semester: "III/I", subjects: ["MGTS301", "EEEG309", "EEEG314", "EPEG302", "EPEG317", "EEEG306", "EPEG307", "PCEG313"] },
+    { semester: "III/II", subjects: ["ETEG301", "EEEG320", "COEG301", "EPEG315", "EPEG318", "PCEG308", "EEEG321", "PCEG319"] },
+    { semester: "IV/I", subjects: ["MGTS403", "COEG401", "EPEG413", "EPEG425", "PCEG403", "PCEG404"] },
+    { semester: "IV/II", subjects: ["MGTS402", "EPEG427", "EPEG415", "PCEG405", "PCEG435", "PCEG436"] }
   ]
 };
