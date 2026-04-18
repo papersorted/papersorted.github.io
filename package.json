@@ -1,0 +1,20 @@
+{
+  "name": "student-papers",
+  "type": "module",
+  "version": "0.0.1",
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "scripts": {
+    "generate": "node scripts/generate-manifest.js",
+    "predev": "node scripts/generate-manifest.js",
+    "dev": "astro dev",
+    "prebuild": "node scripts/generate-manifest.js",
+    "build": "astro build",
+    "preview": "astro preview",
+    "astro": "astro"
+  },
+  "dependencies": {
+    "astro": "^6.1.8"
+  }
+}

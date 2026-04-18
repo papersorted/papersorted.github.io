@@ -1,0 +1,205 @@
+---
+import Layout from "../layouts/Layout.astro";
+import manifest from "../data/manifest.json";
+
+const data = manifest as Record<string, {date: string; file: string}[]>;
+const subjects = Object.keys(data).sort();
+const totalPapers = Object.values(data).reduce((s, a) => s + a.length, 0);
+
+interface CardInfo {
+  code: string;
+  count: number;
+}
+
+const cards: CardInfo[] = subjects.map((code) => ({
+  code,
+  count: data[code].length,
+}));
+---
+
+<Layout title="Exam Papers">
+  <!-- Hero -->
+  <header class="hero">
+    <div class="container">
+      <p class="hero-tag anim">Kathmandu University</p>
+      <h1 class="hero-title serif anim" style="animation-delay:60ms">Exam Papers</h1>
+      <p class="hero-sub anim" style="animation-delay:120ms">
+        {subjects.length} subjects · {totalPapers.toLocaleString()} papers
+      </p>
+    </div>
+  </header>
+
+  <!-- Search -->
+  <div class="container">
+    <div class="search-section anim" style="animation-delay:180ms">
+      <div class="search-box">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+        <input type="text" id="search-input" placeholder="Search subjects…" autocomplete="off" spellcheck="false" />
+        <kbd>/</kbd>
+      </div>
+    </div>
+  </div>
+
+  <!-- Subjects -->
+  <main class="container">
+    <div class="grid-head">
+      <span class="grid-label" id="results-count">All subjects</span>
+    </div>
+
+    <div class="grid" id="subject-grid">
+      {cards.map((c, i) => (
+        <a href={`/subject/${c.code}/`} class="card anim" style={`animation-delay:${Math.min(200 + i * 10, 650)}ms`} data-code={c.code}>
+          <span class="card-code mono">{c.code}</span>
+          <span class="card-papers">{c.count} paper{c.count !== 1 ? "s" : ""}</span>
+        </a>
+      ))}
+    </div>
+
+    <div class="empty" id="no-results" style="display:none">
+      <p>No subjects match your search.</p>
+    </div>
+  </main>
+
+  <footer class="foot">
+    <div class="container foot-inner">
+      <span>KU Exam Archive</span>
+      <span class="foot-dot">·</span>
+        </div>
+  </footer>
+</Layout>
+
+<style>
+  /* ── HERO ── */
+  .hero {
+    padding: 72px 0 12px;
+    border-bottom: 1px solid var(--border);
+  }
+  .hero-tag {
+    font-size: 0.72rem; font-weight: 600; text-transform: uppercase;
+    letter-spacing: 0.12em; color: var(--accent); margin-bottom: 16px;
+  }
+  .hero-title {
+    font-size: clamp(3rem, 8vw, 5.5rem);
+    font-weight: 700; line-height: 1; letter-spacing: -0.02em;
+    color: #e8e4df; margin-bottom: 20px;
+  }
+  .hero-sub {
+    font-size: 0.88rem; color: var(--text-muted); font-weight: 400;
+    padding-bottom: 48px;
+  }
+
+  /* ── SEARCH ── */
+  .search-section { padding: 24px 0 0; }
+  .search-box {
+    display: flex; align-items: center; gap: 10px;
+    height: 44px; padding: 0 14px;
+    background: var(--bg-input);
+    border: 1px solid var(--border);
+    border-radius: var(--r-sm);
+    transition: border-color var(--dur) var(--ease), box-shadow var(--dur) var(--ease);
+  }
+  .search-box svg { color: var(--text-faint); flex-shrink: 0; }
+  .search-box:focus-within {
+    border-color: var(--border-focus);
+    box-shadow: 0 0 0 2px rgba(201,168,124,0.08);
+  }
+  .search-box input {
+    flex: 1; background: none; border: none; outline: none;
+    font-family: inherit; font-size: 0.85rem;
+    color: var(--text); font-weight: 400;
+  }
+  .search-box input::placeholder { color: var(--text-faint); }
+  .search-box kbd {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 22px; height: 22px;
+    background: rgba(255,255,255,0.04); border: 1px solid var(--border);
+    border-radius: 4px; font-family: 'JetBrains Mono', monospace;
+    font-size: 0.6rem; font-weight: 500; color: var(--text-faint);
+  }
+
+  /* ── GRID ── */
+  .grid-head { padding: 28px 0 14px; }
+  .grid-label {
+    font-size: 0.72rem; font-weight: 600; text-transform: uppercase;
+    letter-spacing: 0.08em; color: var(--text-faint);
+  }
+
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(155px, 1fr));
+    gap: 6px;
+    padding-bottom: 80px;
+  }
+
+  .card {
+    display: flex; flex-direction: column; justify-content: space-between;
+    padding: 16px; height: 88px;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--r-sm);
+    transition: all var(--dur) var(--ease);
+    cursor: pointer;
+  }
+  .card:hover {
+    background: var(--bg-card-hover);
+    border-color: var(--border-hover);
+    box-shadow: var(--shadow-card);
+    transform: translateY(-1px);
+  }
+  .card:active { transform: translateY(0); transition-duration: 0.06s; }
+  .card-code {
+    font-size: 0.88rem; font-weight: 500;
+    letter-spacing: 0.01em; color: var(--text);
+  }
+  .card-papers {
+    font-size: 0.7rem; font-weight: 400; color: var(--text-muted);
+  }
+
+  /* ── EMPTY ── */
+  .empty {
+    text-align: center; padding: 60px 0;
+    font-size: 0.85rem; color: var(--text-muted);
+  }
+
+  /* ── FOOTER ── */
+  .foot { border-top: 1px solid var(--border); padding: 28px 0; }
+  .foot-inner {
+    display: flex; justify-content: center; gap: 6px;
+    font-size: 0.72rem; color: var(--text-faint); font-weight: 500;
+  }
+  .foot-dot { opacity: 0.4; }
+
+  @media (max-width: 640px) {
+    .hero { padding: 48px 0 8px; }
+    .hero-title { font-size: 2.4rem; }
+    .hero-sub { padding-bottom: 32px; }
+    .grid { grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 5px; }
+    .card { height: 76px; padding: 13px; }
+  }
+</style>
+
+<script>
+  const input = document.getElementById("search-input") as HTMLInputElement;
+  const grid = document.getElementById("subject-grid")!;
+  const cards = Array.from(grid.querySelectorAll<HTMLAnchorElement>(".card"));
+  const label = document.getElementById("results-count")!;
+  const empty = document.getElementById("no-results")!;
+
+  function search() {
+    const q = input.value.trim().toUpperCase();
+    let n = 0;
+    for (const c of cards) {
+      const show = !q || (c.dataset.code || "").includes(q);
+      c.style.display = show ? "" : "none";
+      if (show) n++;
+    }
+    label.textContent = q ? `${n} result${n !== 1 ? "s" : ""}` : "All subjects";
+    empty.style.display = n === 0 ? "" : "none";
+  }
+
+  input.addEventListener("input", search);
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") { input.value = ""; search(); input.blur(); }
+    if (e.key === "/" && document.activeElement !== input) { e.preventDefault(); input.focus(); }
+  });
+</script>
