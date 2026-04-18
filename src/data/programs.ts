@@ -246,5 +246,15 @@ export const programs = {
     { semester: "III/II", subjects: ["BIOT306", "BIOT308", "BIOT310", "BIOT312", "BIOT313", "BIOT314", "BIOT315", "BIOT356", "BIOT358", "BIOT359"] },
     { semester: "IV/I", subjects: ["BIOT401", "BIOT403", "MGTS402", "BIOT451", "BIOT453", "BIOT404", "BIOT405", "BIOT406", "BIOT407", "BIOT408", "BIOT409", "BIOT410", "BIOT411", "BIOT412", "BIOT413", "BIOT414", "BIOT415", "BIOT416", "BIOT417", "BIOT418", "BIOT419", "BIOT420", "BIOT421", "BIOT422", "BIOT423"] },
     { semester: "IV/II", subjects: ["BIOT455", "BIOT404", "BIOT405", "BIOT406", "BIOT407", "BIOT408", "BIOT409", "BIOT410", "BIOT411", "BIOT412", "BIOT413", "BIOT414", "BIOT415", "BIOT416", "BIOT417", "BIOT418", "BIOT419", "BIOT420", "BIOT421", "BIOT422", "BIOT423"] }
+  ],
+  "Electrical & Electronics Engineering (Communication)": [
+    { semester: "I/I", subjects: ["MATH101", "PHYS101", "CHEM101", "COMP102", "ENGG111", "EDRG101", "ENGG101"] },
+    { semester: "I/II", subjects: ["MATH104", "PHYS102", "ENVE101", "COMP116", "ENGT105", "ENGG112", "EDRG102", "ENGG102"] },
+    { semester: "II/I", subjects: ["MATH207", "EEEG202", "EEEG211", "EEEG207", "EEEG213", "EEEG217", "EEEG218", "EEEG205"] },
+    { semester: "II/II", subjects: ["MATH208", "MCSC202", "EEEG214", "EEEG221", "EEEG215", "EEEG219", "EEEG222", "EEEG212"] },
+    { semester: "III/I", subjects: ["MGTS301", "EEEG309", "EEEG314", "EPEG317", "ETEG320", "EEEG306", "ETEG322", "ETEG313"] },
+    { semester: "III/II", subjects: ["EPEG301", "EEEG320", "ETEG303", "ETEG321", "ETEG305", "ETEG323", "EEEG321", "ETEG319"] },
+    { semester: "IV/I", subjects: ["MGTS403", "ETEG402", "ETEG408", "ETEG422", "ETEG403", "ETEG419"] },
+    { semester: "IV/II", subjects: ["MGTS402", "ETEG417", "ETEG432", "ETEG405", "ETEG435", "ETEG436"] }
   ]
 };
