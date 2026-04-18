@@ -433,11 +433,17 @@ const programFilters: Record<string, SemesterFilterInfo[]> = Object.fromEntries(
 
   const recentContainer = document.getElementById("recent-container")!;
   const recentCarousel = document.getElementById("recent-carousel")!;
+  const clearRecentButton = document.getElementById("clear-recent") as HTMLButtonElement | null;
   const RECENT_KEY = 'ku-recent';
   const RECENT_VIEW_KEY = 'ku-recent-enabled';
 
   function isRecentViewEnabled() {
     return localStorage.getItem(RECENT_VIEW_KEY) !== 'false';
+  }
+
+  function clearRecentHistory() {
+    localStorage.removeItem(RECENT_KEY);
+    renderRecents();
   }
   
   function renderRecents() {
@@ -446,6 +452,7 @@ const programFilters: Record<string, SemesterFilterInfo[]> = Object.fromEntries(
     if (!isRecentViewEnabled()) {
       localStorage.removeItem(RECENT_KEY);
       recentContainer.style.display = "none";
+      if (clearRecentButton) clearRecentButton.disabled = true;
       return;
     }
 
@@ -460,10 +467,12 @@ const programFilters: Record<string, SemesterFilterInfo[]> = Object.fromEntries(
 
     if (sanitizedHistory.length === 0) {
       recentContainer.style.display = "none";
+      if (clearRecentButton) clearRecentButton.disabled = true;
       return;
     }
 
     recentContainer.style.display = "";
+    if (clearRecentButton) clearRecentButton.disabled = false;
 
     sanitizedHistory.forEach((code) => {
       const sourceCard = cardsByCode.get(code);
@@ -481,6 +490,12 @@ const programFilters: Record<string, SemesterFilterInfo[]> = Object.fromEntries(
       }
     });
   }
+
+  clearRecentButton?.addEventListener("click", (event) => {
+    event.preventDefault();
+    clearRecentHistory();
+  });
+
   renderRecents();
 
   window.addEventListener("recent-view-changed", () => {
