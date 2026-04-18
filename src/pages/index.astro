@@ -204,7 +204,7 @@ const cards: CardInfo[] = subjects.map((code) => ({
 
   .card {
     position: relative;
-    padding: 16px; height: 88px;
+    height: 88px;
     background: var(--bg-card);
     border: 1px solid var(--border);
     border-radius: var(--r-sm);
@@ -219,7 +219,8 @@ const cards: CardInfo[] = subjects.map((code) => ({
   .card:active { transform: translateY(0); transition-duration: 0.06s; }
   .card-link {
     display: flex; flex-direction: column; justify-content: space-between;
-    height: 100%; width: 100%; outline: none;
+    height: 100%; width: 100%; padding: 16px; outline: none;
+    padding-right: 40px; /* prevent text overlap with star */
   }
   .card-code {
     font-size: 0.88rem; font-weight: 500;
