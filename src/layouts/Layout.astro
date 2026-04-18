@@ -49,27 +49,42 @@ const subjects = Object.keys(manifest);
         --bg-card: rgba(255,255,255,0.035);
         --bg-card-hover: rgba(255,255,255,0.06);
         --bg-input: rgba(255,255,255,0.04);
-
         --border: rgba(255,255,255,0.08);
         --border-hover: rgba(255,255,255,0.14);
         --border-focus: rgba(255,255,255,0.22);
-
         --text: #eae6e0;
         --text-secondary: #a39e98;
         --text-muted: #78736d;
         --text-faint: #56524e;
-
         --accent: #c4a882;
         --accent-dim: rgba(196,168,130,0.1);
-
         --shadow-sm: 0 1px 2px rgba(0,0,0,0.2);
         --shadow-card: 0 2px 8px rgba(0,0,0,0.15);
         --shadow-card-hover: 0 4px 16px rgba(0,0,0,0.25);
-
         --ease: cubic-bezier(0.16, 1, 0.3, 1);
         --dur: 0.25s;
         --r: 8px;
         --r-sm: 5px;
+      }
+
+      :root.light {
+        --bg: #f5f4ef;
+        --bg-card: #ffffff;
+        --bg-card-hover: #fcfcfc;
+        --bg-input: #ffffff;
+        --bg-modal: #ffffff;
+        --border: rgba(0,0,0,0.08);
+        --border-hover: rgba(0,0,0,0.14);
+        --border-focus: rgba(0,0,0,0.22);
+        --text: #2d2a26;
+        --text-secondary: #5e5a54;
+        --text-muted: #8c8882;
+        --text-faint: #b3b0ab;
+        --accent: #a68b63;
+        --accent-dim: rgba(166,139,99,0.08);
+        --shadow-sm: 0 1px 2px rgba(0,0,0,0.05);
+        --shadow-card: 0 4px 12px rgba(0,0,0,0.05);
+        --shadow-card-hover: 0 8px 24px rgba(0,0,0,0.08);
       }
 
       html {
@@ -133,6 +148,26 @@ const subjects = Object.keys(manifest);
       .breadcrumb a:hover { color: var(--accent); }
       .breadcrumb .sep { color: var(--text-faint); font-size: 0.65rem; }
       .breadcrumb .current { color: var(--text-secondary); }
+
+      /* Global Reset for Buttons */
+      button {
+        all: unset;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        appearance: none; -webkit-appearance: none;
+        background: transparent;
+        color: inherit;
+        border: none; padding: 0; outline: none;
+      }
+
+      /* Theme Toggle Icons */
+      .theme-toggle-btn .sun { display: none !important; }
+      .theme-toggle-btn .moon { display: flex !important; }
+      
+      :root.light .theme-toggle-btn .moon { display: none !important; }
+      :root.light .theme-toggle-btn .sun { display: flex !important; }
     </style>
   </head>
   <body>
@@ -150,8 +185,8 @@ const subjects = Object.keys(manifest);
       .palette-overlay.open { opacity: 1; pointer-events: auto; }
       
       .palette-modal {
-        width: 100%; max-width: 580px; background: #2b2b2b;
-        border: 1px solid rgba(255,255,255,0.08); border-radius: 8px;
+        width: 100%; max-width: 580px; background: var(--bg-modal, #2b2b2b);
+        border: 1px solid var(--border); border-radius: 8px;
         box-shadow: 0 16px 48px rgba(0,0,0,0.4);
         transform: scale(0.96) translateY(10px);
         transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
@@ -161,14 +196,14 @@ const subjects = Object.keys(manifest);
 
       .palette-input-wrap {
         display: flex; align-items: center; padding: 0 16px;
-        border-bottom: 1px solid rgba(255,255,255,0.08);
+        border-bottom: 1px solid var(--border);
       }
-      .palette-input-wrap svg { color: #78736d; }
+      .palette-input-wrap svg { color: var(--text-muted); }
       .palette-input-wrap input {
         width: 100%; padding: 18px 12px; background: transparent; border: none;
-        font-size: 1.1rem; color: #eae6e0; outline: none; font-family: inherit;
+        font-size: 1.1rem; color: var(--text); outline: none; font-family: inherit;
       }
-      .palette-input-wrap input::placeholder { color: #78736d; }
+      .palette-input-wrap input::placeholder { color: var(--text-muted); }
 
       .palette-results {
         max-height: 380px; overflow-y: auto; padding: 8px 0;
@@ -177,14 +212,14 @@ const subjects = Object.keys(manifest);
       .palette-item {
         padding: 10px 18px; margin: 0 8px; border-radius: 5px;
         display: flex; align-items: center; gap: 12px;
-        color: #a39e98; cursor: pointer;
+        color: var(--text-secondary); cursor: pointer;
         transition: all 0.1s;
       }
       .palette-item.active, .palette-item:hover {
-        background: rgba(255,255,255,0.06); color: #eae6e0;
+        background: var(--bg-card-hover); color: var(--text);
       }
-      .palette-item .icon { color: #56524e; }
-      .palette-item.active .icon { color: #c4a882; }
+      .palette-item .icon { color: var(--text-faint); }
+      .palette-item.active .icon { color: var(--accent); }
     </style>
     <div id="cmd-palette" class="palette-overlay">
       <div class="palette-modal" id="cmd-modal">
@@ -197,6 +232,26 @@ const subjects = Object.keys(manifest);
     </div>
     
     <script define:vars={{ subjects }}>
+      // Unified Theme Logic
+      const THEME_KEY = 'ku-app-theme';
+      
+      window.setAppTheme = (isLight) => {
+        document.documentElement.classList.toggle('light', isLight);
+        localStorage.setItem(THEME_KEY, isLight ? 'light' : 'dark');
+        localStorage.setItem('ku-pdf-dark-mode', !isLight ? 'true' : 'false');
+        // Dispatch event for other components to react
+        window.dispatchEvent(new Event('theme-changed'));
+      };
+
+      if (localStorage.getItem(THEME_KEY) === 'light') window.setAppTheme(true);
+      
+      document.addEventListener('click', (e) => {
+        if (e.target.closest('.theme-toggle-btn')) {
+          const isCurrentlyLight = document.documentElement.classList.contains('light');
+          window.setAppTheme(!isCurrentlyLight);
+        }
+      });
+
       if ('serviceWorker' in navigator) {
         window.addEventListener('load', () => {
           navigator.serviceWorker.register('/sw.js').catch((err) => {

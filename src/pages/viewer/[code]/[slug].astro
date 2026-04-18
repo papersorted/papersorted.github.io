@@ -36,17 +36,19 @@ const pdfUrl = `${base}papers/${code}/${decoded}`;
         </div>
       </div>
       <div class="bar-right">
-        <a href={pdfUrl} target="_blank" rel="noopener" class="bar-btn" title="Open in new tab">
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
-        </a>
-        <button id="dark-toggle" class="bar-btn" title="Toggle Dark Mode">
-          <svg class="icon-moon" style="display:block" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
-          <svg class="icon-sun" style="display:none" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
+        <button class="bar-btn theme-toggle-btn" title="Toggle Theme">
+          <svg class="moon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
+          <svg class="sun" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
         </button>
-        <a href={pdfUrl} download={decoded} class="dl-btn">
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-          <span>Download</span>
-        </a>
+        <div class="dl-group">
+          <a href={pdfUrl} target="_blank" rel="noopener" class="bar-btn" title="Open in new tab">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+          </a>
+          <a href={pdfUrl} download={decoded} class="dl-btn">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            <span>Download</span>
+          </a>
+        </div>
       </div>
     </div>
 
@@ -151,32 +153,23 @@ const pdfUrl = `${base}papers/${code}/${decoded}`;
 </style>
 
 <script>
-  const toggle = document.getElementById('dark-toggle');
+  // PDF Viewer contextually reacts to the global theme class
   const pdfContainer = document.querySelector('.pdf-area');
-  const iconMoon = document.querySelector('.icon-moon');
-  const iconSun = document.querySelector('.icon-sun');
-  const KEY = 'ku-pdf-dark-mode';
   
-  function syncToggleUI() {
-    if (pdfContainer?.classList.contains('dark-pdf')) {
-      if (iconMoon) (iconMoon as HTMLElement).style.display = 'none';
-      if (iconSun) (iconSun as HTMLElement).style.display = 'block';
-    } else {
-      if (iconMoon) (iconMoon as HTMLElement).style.display = 'block';
-      if (iconSun) (iconSun as HTMLElement).style.display = 'none';
-    }
+  function syncPDFTheme() {
+    const isDark = !document.documentElement.classList.contains('light');
+    pdfContainer?.classList.toggle('dark-pdf', isDark);
   }
 
-  if (localStorage.getItem(KEY) === 'true') {
-    pdfContainer?.classList.add('dark-pdf');
-  }
-  syncToggleUI();
-
-  toggle?.addEventListener('click', () => {
-    pdfContainer?.classList.toggle('dark-pdf');
-    localStorage.setItem(KEY, pdfContainer?.classList.contains('dark-pdf') ? 'true' : 'false');
-    syncToggleUI();
+  // Observer to react to global theme changes instantly
+  const observer = new MutationObserver((mutations) => {
+    mutations.forEach((m) => {
+      if (m.attributeName === 'class') syncPDFTheme();
+    });
   });
+
+  observer.observe(document.documentElement, { attributes: true });
+  syncPDFTheme();
 </script>
 
 <style>
@@ -215,6 +208,7 @@ const pdfUrl = `${base}papers/${code}/${decoded}`;
   }
 
   .bar-right { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+  .dl-group { display: flex; align-items: center; gap: 8px; }
   .bar-btn {
     display: flex; align-items: center; justify-content: center;
     width: 32px; height: 32px; border-radius: var(--r-sm);
