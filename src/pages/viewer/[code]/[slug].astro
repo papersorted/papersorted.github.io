@@ -116,7 +116,9 @@ const pdfUrl = `${base}papers/${code}/${decoded}`;
 
           const page = await pdf.getPage(pageNum);
           const unscaled = page.getViewport({ scale: 1.0 });
-          const cw = Math.min(unscaled.width, (container.clientWidth || window.innerWidth) - 24);
+          const maxReadableWidth = 720;
+          const availableWidth = Math.max(0, (container.clientWidth || window.innerWidth) - 24);
+          const cw = Math.min(unscaled.width, maxReadableWidth, availableWidth);
           const logicalScale = cw / unscaled.width;
           const pixelRatio = window.devicePixelRatio || 1;
           const viewport = page.getViewport({ scale: logicalScale * pixelRatio });
@@ -222,6 +224,13 @@ const pdfUrl = `${base}papers/${code}/${decoded}`;
     transition: all var(--dur) var(--ease);
   }
   .bar-btn:hover { border-color: var(--border-hover); color: var(--text); background: var(--bg-card-hover); }
+  .viewer-bar .theme-toggle-btn::before {
+    display: none;
+  }
+  .viewer-bar .theme-toggle-btn .moon,
+  .viewer-bar .theme-toggle-btn .sun {
+    filter: none;
+  }
 
   .dl-btn {
     display: inline-flex; align-items: center; gap: 7px;
@@ -232,6 +241,16 @@ const pdfUrl = `${base}papers/${code}/${decoded}`;
     cursor: pointer; transition: all var(--dur) var(--ease);
   }
   .dl-btn:hover { opacity: 0.9; transform: translateY(-1px); }
+  :root.light .dl-btn {
+    background: #2a2a2a;
+    color: #f5f0e8;
+    border: 1px solid #2a2a2a;
+  }
+  :root.light .dl-btn:hover {
+    background: #343434;
+    border-color: #343434;
+    color: #f5f0e8;
+  }
 
   .pdf-area { 
     flex: 1; overflow-y: auto;
@@ -243,7 +262,10 @@ const pdfUrl = `${base}papers/${code}/${decoded}`;
   
   /* Use :global here so Astro Compiler doesn't strip it from final bundle since canvases are dynamically created */
   :global(.pdf-page-canvas) { 
-    max-width: 100%; height: auto; display: block;
+    max-width: min(100%, 720px);
+    height: auto;
+    display: block;
+    margin: 0 auto;
     box-shadow: 0 10px 32px rgba(0,0,0,0.24);
     background: #fff;
     transition:
@@ -253,12 +275,52 @@ const pdfUrl = `${base}papers/${code}/${decoded}`;
   
   :global(.dark-pdf) :global(.pdf-page-canvas) { 
     filter: invert(0.92) hue-rotate(180deg) brightness(1.05) contrast(1.05);
-    box-shadow: 0 16px 40px rgba(0,0,0,0.44);
+    box-shadow: 0 0 40px rgba(0,0,0,0.4);
   }
 
   @media (max-width: 640px) {
-    .viewer-bar { padding: 0 12px; }
+    .viewer-bar {
+      padding: 0 12px;
+      border-bottom-color: #3a3a3a;
+    }
+    .bar-back,
+    .bar-btn,
+    .dl-btn {
+      border: none !important;
+      background: transparent !important;
+      box-shadow: none;
+    }
+    .bar-back {
+      color: var(--text-muted);
+    }
+    .bar-btn,
+    .dl-btn {
+      color: var(--text-secondary);
+    }
+    .bar-back:hover,
+    .bar-btn:hover,
+    .dl-btn:hover {
+      border-color: transparent;
+      background: transparent !important;
+      color: var(--text);
+      transform: none;
+    }
     .dl-btn span { display: none; }
     .dl-btn { width: 32px; padding: 0; justify-content: center; }
+    :root.light .bar-back {
+      color: #8c8882;
+    }
+    :root.light .bar-btn,
+    :root.light .dl-btn {
+      color: #5e5a54;
+    }
+    :root.light .bar-back:hover,
+    :root.light .bar-btn:hover,
+    :root.light .dl-btn:hover {
+      color: #2d2a26;
+    }
+    :root.light .viewer-bar {
+      border-bottom-color: rgba(0, 0, 0, 0.1);
+    }
   }
 </style>

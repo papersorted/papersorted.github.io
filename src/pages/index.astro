@@ -48,79 +48,85 @@ const programFilters: Record<string, SemesterFilterInfo[]> = Object.fromEntries(
 
 ---
 
-<Layout title="Exam Papers">
-  <!-- Hero -->
-  <header class="hero">
-    <div class="container hero-inner">
-      <div class="hero-text">
-        <p class="hero-tag anim">Kathmandu University</p>
-        <h1 class="hero-title serif anim" style="animation-delay:60ms">Exam Papers</h1>
-        <p class="hero-sub anim" style="animation-delay:120ms">
-          {subjects.length} subjects · {totalPapers.toLocaleString()} papers
-        </p>
+<Layout title="Exam Papers" bodyClass="home-page">
+  <div class="home-page">
+    <!-- Hero -->
+    <header class="hero">
+      <div class="container hero-shell">
+        <div class="hero-top">
+          <div class="hero-text">
+            <p class="hero-tag anim">Kathmandu University</p>
+            <h1 class="hero-title anim">
+              <span class="hero-title-line">Exam</span>
+              <span class="hero-title-line">Papers</span>
+            </h1>
+            <p class="hero-sub anim" style="animation-delay:120ms">
+              <span class="hero-stat"><strong>{subjects.length}</strong> <span>subjects</span></span>
+              <span class="hero-sub-dot" aria-hidden="true">&middot;</span>
+              <span class="hero-stat"><strong>{totalPapers.toLocaleString()}</strong> <span>papers</span></span>
+            </p>
+          </div>
+          <div class="hero-tools anim" style="animation-delay:150ms">
+            <button class="hero-theme-btn theme-toggle-btn" title="Toggle Theme">
+              <svg class="moon" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
+              <svg class="sun" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
+            </button>
+          </div>
+        </div>
+        <div class="search-section anim" style="animation-delay:180ms">
+          <div class="search-box">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+            <input type="text" id="search-input" placeholder="Search by code or subject area..." autocomplete="off" spellcheck="false" />
+            <kbd>/</kbd>
+          </div>
+        </div>
       </div>
-      <button class="hero-theme-btn theme-toggle-btn anim" style="animation-delay:150ms" title="Toggle Theme">
-        <svg class="moon" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
-        <svg class="sun" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
-      </button>
-    </div>
-  </header>
+    </header>
 
-  <!-- Search -->
-  <div class="container">
-    <div class="search-section anim" style="animation-delay:180ms">
-      <div class="search-box">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
-        <input type="text" id="search-input" placeholder="Search by code or subject area…" autocomplete="off" spellcheck="false" />
-        <kbd>/</kbd>
+    <!-- Recently Viewed -->
+    <div class="container anim recent-section" id="recent-container" style="display: none; animation-delay:190ms">
+      <div class="grid-head recent-head">
+        <span class="grid-label">Recently Viewed</span>
+        <button id="clear-recent" class="clear-btn" title="Clear history">Clear</button>
+      </div>
+      <div class="recent-scroll" id="recent-carousel"></div>
+    </div>
+
+    <!-- Filters -->
+    <div class="container anim filters-section" style="animation-delay:200ms;">
+      <div class="program-filter">
+        <select id="program-select" class="dropdown">
+          <option value="none">All Programs</option>
+          {Object.keys(programFilters).sort().map((prog) => (
+            <option value={prog}>{prog}</option>
+          ))}
+        </select>
+      </div>
+
+      <div class="filters-scroll" id="semester-wrapper" style="display:none; margin-top: 12px;">
+        <div class="filters" id="semester-filters">
+          <button class="filter-btn active" type="button" data-sem="all" data-label="All Semesters">All Semesters</button>
+          {Object.entries(programFilters).map(([progName, sems]) => (
+            sems.map((sem) => (
+               <button
+                 class="filter-btn sem-btn"
+                 type="button"
+                 style="display:none;"
+                 data-prog={progName}
+                 data-sem={sem.semester}
+                 data-label={sem.label}
+                 data-subjects={sem.subjects.join(",")}
+               >
+                 {sem.label}
+               </button>
+            ))
+          ))}
+        </div>
       </div>
     </div>
-  </div>
 
-  <!-- Recently Viewed -->
-  <div class="container anim" id="recent-container" style="display: none; margin-top: 28px; animation-delay:190ms">
-    <div class="grid-head" style="padding: 0 0 10px 0; display: flex; align-items: center; justify-content: space-between;">
-      <span class="grid-label">Recently Viewed</span>
-      <button id="clear-recent" class="clear-btn" title="Clear history">Clear</button>
-    </div>
-    <div class="recent-scroll" id="recent-carousel"></div>
-  </div>
-
-  <!-- Filters -->
-  <div class="container anim" style="animation-delay:200ms; margin-top: 16px;">
-    <div class="program-filter">
-      <select id="program-select" class="dropdown">
-        <option value="none">All Programs</option>
-        {Object.keys(programFilters).sort().map((prog) => (
-          <option value={prog}>{prog}</option>
-        ))}
-      </select>
-    </div>
-
-    <div class="filters-scroll" id="semester-wrapper" style="display:none; margin-top: 12px;">
-      <div class="filters" id="semester-filters">
-        <button class="filter-btn active" type="button" data-sem="all" data-label="All Semesters">All Semesters</button>
-        {Object.entries(programFilters).map(([progName, sems]) => (
-          sems.map((sem) => (
-             <button
-               class="filter-btn sem-btn"
-               type="button"
-               style="display:none;"
-               data-prog={progName}
-               data-sem={sem.semester}
-               data-label={sem.label}
-               data-subjects={sem.subjects.join(",")}
-             >
-               {sem.label}
-             </button>
-          ))
-        ))}
-      </div>
-    </div>
-  </div>
-
-  <!-- Subjects -->
-  <main class="container">
+    <!-- Subjects -->
+    <main class="container">
     <div class="grid-head">
       <span class="grid-label" id="results-count">All subjects</span>
     </div>
@@ -130,11 +136,14 @@ const programFilters: Record<string, SemesterFilterInfo[]> = Object.fromEntries(
         <div class="card anim" style={`animation-delay:${Math.min(200 + i * 10, 650)}ms`} data-code={c.code}>
           <a href={`/subject/${c.code}/`} class="card-link">
             <span class="card-code mono">{c.code}</span>
-            <span class="card-papers">{c.count} paper{c.count !== 1 ? "s" : ""}</span>
+            <span class="card-papers">
+              {c.count} paper{c.count !== 1 ? "s" : ""}
+              {c.count >= 5 && <span class="paper-density" aria-hidden="true"></span>}
+            </span>
           </a>
           <div class="card-actions">
             <button class="star-btn" aria-label="Favorite" title="Add to Favorites">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" class="star-icon" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" class="star-icon" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
             </button>
           </div>
         </div>
@@ -148,86 +157,273 @@ const programFilters: Record<string, SemesterFilterInfo[]> = Object.fromEntries(
     </div>
   </main>
 
-  <footer class="foot">
-    <div class="container foot-inner">
-      <a href="https://github.com/papersorted/papersorted.github.io/issues/new" target="_blank" rel="noopener" class="foot-link">Contribute Papers</a>
-    </div>
-  </footer>
+    <footer class="foot">
+      <div class="container foot-inner">
+        <div class="foot-copy">
+          <p class="foot-label">Papersorted</p>
+          <p class="foot-note">&copy; 2026 &middot; All rights reserved</p>
+        </div>
+        <a href="https://github.com/papersorted/papersorted.github.io/issues/new" target="_blank" rel="noopener" class="foot-link">
+          <span>Contribute Papers</span>
+          <span class="foot-arrow" aria-hidden="true">&rarr;</span>
+        </a>
+      </div>
+    </footer>
+  </div>
 </Layout>
 
 <style>
+  :global(:root) {
+    background: #2a2a2a;
+  }
+  :global(:root.light) {
+    background: #f5f4ef;
+  }
+  :global(body.home-page) {
+    --home-bg: #2a2a2a;
+    --home-text: #f0ebe0;
+    --home-muted: #888888;
+    --home-card: #333333;
+    --home-surface: #3a3a3a;
+    --home-border: #444444;
+    --grain-opacity: 0;
+    background: var(--home-bg);
+    color: var(--home-text);
+  }
+  :global(:root.light body.home-page) {
+    --home-bg: #f5f4ef;
+    --home-text: #2d2a26;
+    --home-muted: #8a857e;
+    --home-card: #ffffff;
+    --home-surface: #f7f2ea;
+    --home-border: rgba(0, 0, 0, 0.1);
+  }
+  :global(body.home-page)::after {
+    content: "";
+    display: block;
+    opacity: 0.06;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 220 220' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='grain'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='1.6' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23grain)'/%3E%3C/svg%3E");
+    background-repeat: repeat;
+    background-size: 128px 128px;
+    background-position: -7px -5px;
+    mix-blend-mode: soft-light;
+    filter: contrast(140%) brightness(104%);
+  }
+
+  .home-page {
+    min-height: 100vh;
+    background: transparent;
+  }
+  .home-page .container {
+    max-width: 900px;
+    padding-left: 48px;
+    padding-right: 48px;
+  }
+  .home-page .theme-toggle-btn::before {
+    content: none;
+  }
+  .home-page .theme-toggle-btn .moon,
+  .home-page .theme-toggle-btn .sun {
+    filter: none;
+  }
+
   /* ── HERO ── */
-  .hero { padding: 80px 0 60px; }
-  .hero-inner { display: flex; align-items: flex-start; justify-content: space-between; gap: 24px; }
-  .hero-text { flex: 1; }
+  .hero {
+    padding: 40px 0 0;
+  }
+  .hero::before {
+    content: none;
+  }
+  :root.light .hero::before {
+    content: none;
+  }
+  .hero-shell {
+    display: grid;
+    gap: 28px;
+  }
+  .hero-top {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: start;
+    gap: 32px;
+  }
+  .hero-text {
+    max-width: 100%;
+    padding-top: 0;
+  }
   .hero-tag {
-    font-size: 0.72rem; font-weight: 600; text-transform: uppercase;
-    letter-spacing: 0.08em; color: var(--accent); margin-bottom: 12px;
+    display: inline-flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 20px;
+    color: var(--home-muted);
+    font-size: 0.78rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.16em;
+  }
+  .hero-tag::before {
+    content: "";
+    width: 28px;
+    height: 1px;
+    background: var(--home-muted);
+    opacity: 1;
   }
   .hero-title {
-    font-size: clamp(3.2rem, 9vw, 6rem);
-    font-weight: 500; line-height: 1; letter-spacing: -0.03em;
-    color: var(--text); margin-bottom: 20px; opacity: 0.95;
+    display: grid;
+    gap: 0;
+    width: max-content;
+    max-width: 100%;
+    margin-bottom: 20px;
+    color: var(--home-text);
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: clamp(4.5rem, 9.4vw, 7.5rem);
+    font-weight: 700;
+    line-height: 0.9;
+    letter-spacing: -0.045em;
+  }
+  .hero-title-line {
+    display: block;
+  }
+  .hero-title-line:last-child {
+    margin-left: 0;
   }
   .hero-sub {
-    font-size: 0.95rem; color: var(--text-secondary); font-weight: 400;
+    display: flex;
+    align-items: center;
+    flex-wrap: nowrap;
+    gap: 10px;
+    width: max-content;
+    max-width: 100%;
+    color: var(--home-muted);
+    font-size: 1rem;
+    font-weight: 400;
+    letter-spacing: 0;
+  }
+  .hero-stat {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 6px;
+  }
+  .hero-stat strong {
+    color: var(--home-text);
+    font-weight: 700;
+  }
+  .hero-sub-dot {
+    color: var(--home-muted);
+    font-size: 1rem;
+    line-height: 1;
+  }
+  .hero-tools {
+    display: flex;
+    align-items: flex-start;
+    justify-content: flex-end;
+    padding-top: 2px;
   }
   .hero-theme-btn {
-    width: 44px; height: 44px; border-radius: 50%;
-    color: var(--text-secondary); border: 1px solid var(--border);
-    background: var(--bg-card); transition: all var(--dur) var(--ease);
+    width: 48px;
+    height: 48px;
+    border-radius: 999px;
+    border: 1px solid var(--home-border);
+    background: var(--home-card);
+    color: var(--home-text);
+    transition: border-color var(--dur) var(--ease), color var(--dur) var(--ease), background-color var(--dur) var(--ease);
   }
-  .hero-theme-btn:hover { border-color: var(--border-hover); color: var(--text); transform: translateY(-2px); }
+  .hero-theme-btn:hover {
+    border-color: var(--home-muted);
+    background: var(--home-card);
+    color: var(--home-text);
+    transform: none;
+  }
 
   /* ── SEARCH ── */
-  .search-section { padding: 24px 0 0; }
-  .search-box {
-    display: flex; align-items: center; gap: 10px;
-    height: 44px; padding: 0 14px;
-    background: var(--bg-input);
-    border: 1px solid var(--border);
-    border-radius: var(--r-sm);
-    transition: border-color var(--dur) var(--ease), box-shadow var(--dur) var(--ease);
+  .search-section {
+    width: 100%;
+    margin-top: 0;
   }
-  .search-box svg { color: var(--text-muted); flex-shrink: 0; }
+  .search-box {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    height: 56px;
+    padding: 0 18px;
+    background: var(--home-surface);
+    border: 1px solid var(--home-border);
+    border-radius: 999px;
+    transition: border-color var(--dur) var(--ease), background-color var(--dur) var(--ease);
+  }
+  .search-box svg { color: var(--home-muted); flex-shrink: 0; }
   .search-box:focus-within {
-    border-color: var(--border-focus);
-    box-shadow: 0 0 0 2px rgba(201,168,124,0.08);
+    border-color: var(--home-muted);
   }
   .search-box input {
-    flex: 1; background: none; border: none; outline: none;
-    font-family: inherit; font-size: 0.85rem;
-    color: var(--text); font-weight: 400;
+    flex: 1;
+    background: none;
+    border: none;
+    outline: none;
+    color: var(--home-text);
+    font-family: inherit;
+    font-size: 0.95rem;
+    font-weight: 400;
   }
-  .search-box input::placeholder { color: var(--text-muted); }
+  .search-box input::placeholder { color: var(--home-muted); }
   .search-box kbd {
-    display: inline-flex; align-items: center; justify-content: center;
-    width: 22px; height: 22px;
-    background: rgba(255,255,255,0.04); border: 1px solid var(--border);
-    border-radius: 4px; font-family: 'JetBrains Mono', monospace;
-    font-size: 0.6rem; font-weight: 500; color: var(--text-muted);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    border: 1px solid var(--home-border);
+    border-radius: 8px;
+    background: var(--home-card);
+    color: var(--home-muted);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.65rem;
+    font-weight: 500;
   }
 
   /* ── PROGRAM DROPDOWN ── */
+  .recent-section,
+  .filters-section,
+  main.container {
+    margin-top: 30px;
+  }
+  .recent-head {
+    padding: 0 0 14px 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
   .program-filter { display: flex; align-items: center; width: 100%; min-width: 0; }
   .dropdown {
     width: 100%; max-width: 100%;
     text-overflow: ellipsis; overflow: hidden; white-space: nowrap;
-    background: var(--bg-card); color: var(--text);
-    border: 1px solid var(--border); border-radius: var(--r-sm);
-    padding: 8px 18px 8px 14px; font-size: 0.85rem; font-family: inherit; font-weight: 500;
-    cursor: pointer; transition: all var(--dur) var(--ease); outline: none;
+    background: var(--home-card);
+    color: var(--home-text);
+    border: 1px solid var(--home-border);
+    border-radius: 16px;
+    padding: 14px 18px 14px 16px;
+    font-size: 0.95rem;
+    font-family: inherit;
+    font-weight: 400;
+    cursor: pointer;
+    transition: border-color var(--dur) var(--ease), color var(--dur) var(--ease), background-color var(--dur) var(--ease);
+    outline: none;
     -webkit-appearance: none; appearance: none;
-    background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23a39e98%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E");
+    background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2212%22%20height%3D%228%22%20viewBox%3D%220%200%2012%208%22%3E%3Cpath%20fill%3D%22%23888888%22%20d%3D%22M1.41.59%206%205.17%2010.59.59%2012%202l-6%206-6-6z%22%2F%3E%3C%2Fsvg%3E");
     background-repeat: no-repeat; background-position: right 14px top 55%; background-size: 10px auto;
     padding-right: 36px;
   }
-  .dropdown:hover { border-color: var(--border-hover); background-color: var(--bg-card-hover); }
-  .dropdown:focus { border-color: var(--border-focus); box-shadow: 0 0 0 2px rgba(201,168,124,0.08); }
+  .dropdown:hover,
+  .dropdown:focus {
+    border-color: var(--home-muted);
+    background-color: var(--home-card);
+  }
 
   /* ── FILTERS ── */
   .filters-scroll {
-    overflow-x: auto; padding-bottom: 8px; margin-bottom: -8px;
+    overflow-x: auto; padding-bottom: 8px; margin-top: 14px; margin-bottom: -8px;
     scrollbar-width: none;
   }
   .filters-scroll::-webkit-scrollbar { display: none; }
@@ -235,16 +431,16 @@ const programFilters: Record<string, SemesterFilterInfo[]> = Object.fromEntries(
     display: flex; gap: 8px; align-items: center; white-space: nowrap;
   }
   .filter-btn {
-    background: var(--bg-card); color: var(--text-secondary);
-    border: 1px solid var(--border); border-radius: 20px;
+    background: var(--home-card); color: var(--home-muted);
+    border: 1px solid var(--home-border); border-radius: 999px;
     padding: 6px 14px; font-size: 0.78rem; font-family: inherit; font-weight: 500;
     cursor: pointer; transition: all var(--dur) var(--ease);
   }
   .filter-btn:hover {
-    background: var(--bg-card-hover); border-color: var(--border-hover); color: var(--text);
+    background: var(--home-card); border-color: var(--home-muted); color: var(--home-text);
   }
   .filter-btn.active {
-    background: var(--accent); color: var(--bg); border-color: var(--accent);
+    background: var(--home-card); color: var(--home-text); border-color: var(--home-muted);
   }
 
   /* ── RECENT CAROUSEL ── */
@@ -254,37 +450,166 @@ const programFilters: Record<string, SemesterFilterInfo[]> = Object.fromEntries(
     scrollbar-width: none;
   }
   .recent-scroll::-webkit-scrollbar { display: none; }
-  .recent-scroll .card { min-width: 155px; height: 84px; flex-shrink: 0; }
+  .recent-scroll .card {
+    min-width: 155px;
+    height: 84px;
+    flex-shrink: 0;
+    border-radius: 6px;
+  }
 
   /* ── GRID ── */
-  .grid-head { padding: 28px 0 14px; }
+  .grid-head { padding: 0 0 14px; }
   .grid-label {
-    font-size: 0.72rem; font-weight: 600; text-transform: uppercase;
-    letter-spacing: 0.08em; color: var(--text-faint);
+    font-size: 0.76rem; font-weight: 600; text-transform: uppercase;
+    letter-spacing: 0.16em; color: var(--home-muted);
   }
 
   .grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(155px, 1fr));
-    gap: 6px;
-    padding-bottom: 80px;
+    gap: 8px;
+    padding-bottom: 16px;
+  }
+
+  #subject-grid .card {
+    height: auto;
+    min-height: 72px;
+    border-radius: 6px;
+    transition: background-color var(--dur) var(--ease), border-color var(--dur) var(--ease), color var(--dur) var(--ease);
+  }
+  #subject-grid .card:hover,
+  #subject-grid .card:focus-within {
+    background: #3a3a3a;
+    border-color: #555555;
+    box-shadow: none;
+    transform: none;
+  }
+  :root.light #subject-grid .card:hover,
+  :root.light #subject-grid .card:focus-within {
+    background: #f3efe8;
+    border-color: rgba(0, 0, 0, 0.18);
+  }
+  #subject-grid .card-link {
+    padding: 14px 16px;
+    justify-content: space-between;
+  }
+  #subject-grid .card-code {
+    color: var(--home-text);
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+  }
+  #subject-grid .card-papers {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    color: #666666;
+    font-size: 11px;
+    font-weight: 400;
+    line-height: 1.2;
+  }
+  #subject-grid .paper-density {
+    display: inline-flex;
+    width: 5px;
+    height: 5px;
+    border-radius: 999px;
+    background: currentColor;
+    opacity: 0.6;
+  }
+  .recent-scroll .paper-density {
+    display: none;
+  }
+  :is(#subject-grid, #recent-carousel) .card-actions {
+    top: 8px;
+    right: 8px;
+    bottom: auto;
+    z-index: 12;
+  }
+  :is(#subject-grid, #recent-carousel) .star-btn {
+    min-width: 24px;
+    min-height: 24px;
+    padding: 4px;
+    color: #888888;
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    background: transparent !important;
+  }
+  :is(#subject-grid, #recent-carousel) .star-icon {
+    display: block;
+    width: 16px;
+    height: 16px;
+    opacity: 0.4;
+    visibility: hidden;
+    fill: transparent;
+    stroke: currentColor;
+    transition: opacity var(--dur) var(--ease), fill var(--dur) var(--ease), stroke var(--dur) var(--ease);
+  }
+  :is(#subject-grid, #recent-carousel) .card.favorited .star-btn {
+    color: #f0ebe0;
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+  }
+  :is(#subject-grid, #recent-carousel) .card.favorited .star-icon {
+    fill: #f0ebe0;
+    stroke: #f0ebe0;
+    opacity: 1;
+    visibility: visible;
+  }
+  @media (pointer: fine) {
+    :is(#subject-grid, #recent-carousel) .card:hover .star-btn,
+    :is(#subject-grid, #recent-carousel) .card:focus-within .star-btn {
+      opacity: 1;
+      visibility: visible;
+      pointer-events: auto;
+    }
+    :is(#subject-grid, #recent-carousel) .card:hover .star-icon,
+    :is(#subject-grid, #recent-carousel) .card:focus-within .star-icon {
+      opacity: 0.4;
+      visibility: visible;
+    }
+    :is(#subject-grid, #recent-carousel) .star-btn:hover .star-icon,
+    :is(#subject-grid, #recent-carousel) .star-btn:focus-visible .star-icon {
+      opacity: 1;
+      visibility: visible;
+    }
+  }
+  @media (pointer: coarse) {
+    :is(#subject-grid, #recent-carousel) .card-actions {
+      top: auto;
+      right: 4px;
+      bottom: 4px;
+    }
+    :is(#subject-grid, #recent-carousel) .star-btn {
+      min-width: 44px;
+      min-height: 44px;
+      padding: 14px;
+      opacity: 1;
+      visibility: visible;
+      pointer-events: auto;
+    }
+    :is(#subject-grid, #recent-carousel) .star-icon {
+      opacity: 0.35;
+      visibility: visible;
+    }
+    :is(#subject-grid, #recent-carousel) .card-link {
+      padding-right: 60px;
+    }
   }
 
   .card {
     position: relative;
     height: 88px;
-    background: var(--bg-card);
-    border: 1px solid var(--border);
-    border-radius: var(--r-sm);
-    transition: all var(--dur) var(--ease);
+    background: var(--home-card);
+    border: 1px solid var(--home-border);
+    border-radius: 16px;
+    transition: border-color var(--dur) var(--ease), color var(--dur) var(--ease), background-color var(--dur) var(--ease);
   }
   .card:hover {
-    background: var(--bg-card-hover);
-    border-color: var(--border-hover);
-    box-shadow: var(--shadow-card);
-    transform: translateY(-1px);
+    background: var(--home-card);
+    border-color: var(--home-muted);
   }
-  .card:active { transform: translateY(0); transition-duration: 0.06s; }
   .card-link {
     position: absolute; inset: 0;
     display: flex; flex-direction: column; justify-content: space-between;
@@ -292,10 +617,10 @@ const programFilters: Record<string, SemesterFilterInfo[]> = Object.fromEntries(
   }
   .card-code {
     font-size: 0.88rem; font-weight: 500;
-    letter-spacing: 0.01em; color: var(--text);
+    letter-spacing: 0.01em; color: var(--home-text);
   }
   .card-papers {
-    font-size: 0.7rem; font-weight: 400; color: var(--text-muted);
+    font-size: 0.7rem; font-weight: 400; color: var(--home-muted);
   }
   
   .card-actions {
@@ -304,42 +629,161 @@ const programFilters: Record<string, SemesterFilterInfo[]> = Object.fromEntries(
   }
   .star-btn {
     width: 28px; height: 28px; border-radius: 50%;
-    color: var(--text-secondary); background: transparent !important;
-    transition: all var(--dur) var(--ease); opacity: 0.4;
+    color: var(--home-muted); background: transparent !important;
+    transition: color var(--dur) var(--ease), opacity var(--dur) var(--ease); opacity: 0.9;
   }
-  .star-btn:hover { color: var(--accent); background: var(--bg-card-hover) !important; opacity: 1; }
-  .card.favorited .star-btn { color: var(--accent); opacity: 1; }
-  .card.favorited .star-icon { fill: var(--accent); stroke: var(--accent); }
+  .star-btn:hover { color: var(--home-text); opacity: 1; }
+  .card.favorited .star-btn { color: var(--home-text); opacity: 1; }
+  .card.favorited .star-icon { fill: var(--home-text); stroke: var(--home-text); }
 
   /* ── EMPTY ── */
   .empty {
     text-align: center; padding: 60px 0;
-    font-size: 0.85rem; color: var(--text-muted);
+    font-size: 0.85rem; color: var(--home-muted);
   }
 
   .clear-btn {
     background: none; border: none; outline: none;
-    font-size: 0.65rem; font-weight: 600; text-transform: uppercase;
-    letter-spacing: 0.05em; color: var(--text-faint);
+    font-size: 0.72rem; font-weight: 500; text-transform: uppercase;
+    letter-spacing: 0.12em; color: var(--home-muted);
     cursor: pointer; transition: color var(--dur) var(--ease);
     padding: 4px 8px; margin-right: -8px;
   }
-  .clear-btn:hover { color: var(--accent); }
+  .clear-btn:hover { color: var(--home-text); }
 
   /* ── FOOTER ── */
-  .foot { border-top: 1px solid var(--border); padding: 28px 0; }
-  .foot-inner {
-    display: flex; justify-content: center; gap: 8px;
-    font-size: 0.75rem; color: var(--text-faint); font-weight: 500;
+  .foot {
+    border-top: 1px solid #333333;
+    padding: 28px 0;
   }
-  .foot-dot { opacity: 0.4; }
-  .foot-link { color: var(--text-muted); transition: color var(--dur) var(--ease); }
-  .foot-link:hover { color: var(--accent); }
+  .foot-inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+  }
+  .foot-copy {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+    min-width: 0;
+  }
+  .foot-label {
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.18em;
+    color: #555555;
+  }
+  .foot-note {
+    font-size: 11px;
+    color: #555555;
+  }
+  .foot-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 0;
+    border: none;
+    border-radius: 0;
+    background: transparent;
+    color: #666666;
+    font-size: 12px;
+    font-weight: 500;
+    transition: color 0.2s ease;
+    white-space: nowrap;
+  }
+  .foot-link:hover {
+    color: #f0ebe0;
+  }
+  .foot-arrow {
+    display: inline-block;
+    transition: transform 0.2s ease;
+  }
+  .foot-link:hover .foot-arrow {
+    transform: translateX(3px);
+  }
+  :root.light .foot {
+    border-top-color: rgba(0, 0, 0, 0.08);
+  }
+  :root.light .foot-label,
+  :root.light .foot-note {
+    color: #7a746c;
+  }
+  :root.light .foot-link { color: #6f6a63; }
+  :root.light .foot-link:hover {
+    color: #2d2a26;
+  }
 
   @media (max-width: 640px) {
-    .hero { padding: 48px 0 8px; }
-    .hero-title { font-size: 2.4rem; }
-    .hero-sub { padding-bottom: 32px; }
+    .home-page .container {
+      padding-left: 24px;
+      padding-right: 24px;
+    }
+    .hero { padding: 32px 0 0; }
+    .hero-shell { gap: 24px; }
+    .hero-top {
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 16px;
+    }
+    .hero-text { padding-top: 0; }
+    .hero-tag {
+      gap: 10px;
+      margin-bottom: 14px;
+      font-size: 0.68rem;
+      letter-spacing: 0.12em;
+    }
+    .hero-tag::before { width: 24px; }
+    .hero-title {
+      margin-bottom: 14px;
+      font-size: clamp(3.2rem, 17vw, 5rem);
+      line-height: 0.92;
+    }
+    .hero-sub {
+      gap: 8px;
+      flex-wrap: wrap;
+      width: auto;
+      font-size: 0.9rem;
+    }
+    .hero-tools {
+      padding-top: 2px;
+    }
+    .hero-theme-btn {
+      width: 42px;
+      height: 42px;
+    }
+    .foot-inner {
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+      text-align: center;
+    }
+    .foot-copy {
+      flex-direction: column;
+      gap: 4px;
+      align-items: center;
+    }
+    .foot-label,
+    .foot-note,
+    .foot-link {
+      font-size: 11px;
+    }
+    .search-section {
+      margin-top: 0;
+    }
+    .search-box {
+      height: 50px;
+      padding: 0 15px;
+    }
+    .search-box input {
+      font-size: 0.88rem;
+    }
+    .recent-section,
+    .filters-section,
+    main.container {
+      margin-top: 28px;
+    }
     .grid { grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 5px; }
     .card { height: 76px; padding: 13px; }
   }
