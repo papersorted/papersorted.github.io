@@ -1,5 +1,29 @@
 [
   {
+    "subjectCode": "COMP116",
+    "exam": "first-internal",
+    "year": 2024,
+    "file": "COMP116_First_Internal_Dec_2024.jpeg",
+    "teacher": "Trailokya Raj Ojha",
+    "label": "First Internal · December 2024"
+  },
+  {
+    "subjectCode": "COMP116",
+    "exam": "second-internal",
+    "year": 2025,
+    "file": "COMP116_Second_Internal_Feb_2025_Set_A.jpeg",
+    "teacher": "Trailokya Raj Ojha",
+    "label": "Second Internal · February 2025 · Set A"
+  },
+  {
+    "subjectCode": "COMP116",
+    "exam": "second-internal",
+    "year": 2025,
+    "file": "COMP116_Second_Internal_Feb_2025_Set_B.jpeg",
+    "teacher": "Trailokya Raj Ojha",
+    "label": "Second Internal · February 2025 · Set B"
+  },
+  {
     "subjectCode": "COMP204",
     "exam": "first-internal",
     "year": 2025,
@@ -24,6 +48,30 @@
     "label": "First Internal · December 2025"
   },
   {
+    "subjectCode": "ENGG112",
+    "exam": "first-internal",
+    "year": 2025,
+    "file": "ENGG112_First_Internal_Jan_2025.pdf",
+    "teacher": "Santosh Shaha",
+    "label": "First Internal · January 2025"
+  },
+  {
+    "subjectCode": "ENGG112",
+    "exam": "second-internal",
+    "year": 2025,
+    "file": "ENGG112_Second_Internal_Mar_2025.pdf",
+    "teacher": "Santosh Shaha",
+    "label": "Second Internal · March 2025"
+  },
+  {
+    "subjectCode": "ENGG112",
+    "exam": "third-internal",
+    "year": 2025,
+    "file": "ENGG112_Third_Internal_Mar_2025_MCQ.pdf",
+    "teacher": "Santosh Shaha",
+    "label": "Third Internal · March 2025 · MCQ"
+  },
+  {
     "subjectCode": "MCSC202",
     "exam": "first-internal",
     "year": 2025,
@@ -38,5 +86,45 @@
     "file": "MATH207_First_Internal_Dec_2025.jpeg",
     "teacher": "Mohan Chandra Adhikari",
     "label": "First Internal · December 2025"
+  },
+  {
+    "subjectCode": "MATH104",
+    "exam": "first-internal",
+    "year": 2024,
+    "file": "MATH104_First_Internal_2024_BIT.jpeg",
+    "teacher": "Ganga Ram Phaijoo",
+    "label": "First Internal · 2024 · BIT"
+  },
+  {
+    "subjectCode": "MATH104",
+    "exam": "second-internal",
+    "year": 2024,
+    "file": "MATH104_Second_Internal_2024_BIT.jpeg",
+    "teacher": "Ganga Ram Phaijoo",
+    "label": "Second Internal · 2024 · BIT"
+  },
+  {
+    "subjectCode": "MATH104",
+    "exam": "first-internal",
+    "year": 2024,
+    "file": "MATH104_First_Internal_2024_CE_Set_A.jpeg",
+    "teacher": "Santosh Paudel",
+    "label": "First Internal · 2024 · CE · Set A"
+  },
+  {
+    "subjectCode": "MATH104",
+    "exam": "first-internal",
+    "year": 2024,
+    "file": "MATH104_First_Internal_2024_CE_Set_B.jpeg",
+    "teacher": "Santosh Paudel",
+    "label": "First Internal · 2024 · CE · Set B"
+  },
+  {
+    "subjectCode": "MATH104",
+    "exam": "second-internal",
+    "year": 2024,
+    "file": "MATH104_Second_Internal_2024_CE.jpeg",
+    "teacher": "Santosh Paudel",
+    "label": "Second Internal · 2024 · CE"
   }
 ]

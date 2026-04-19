@@ -64,8 +64,8 @@ const sortedInternalYears = Object.keys(internalYearGroups)
 
 for (const year of sortedInternalYears) {
   internalYearGroups[year].sort((a, b) => {
-    const rankA = a.exam === "first-internal" ? 1 : 2;
-    const rankB = b.exam === "first-internal" ? 1 : 2;
+    const rankA = a.exam === "first-internal" ? 1 : a.exam === "second-internal" ? 2 : 3;
+    const rankB = b.exam === "first-internal" ? 1 : b.exam === "second-internal" ? 2 : 3;
     return rankA - rankB;
   });
 }
@@ -117,7 +117,7 @@ const contributeDelay = 150 + (sortedYears.length + sortedInternalYears.length) 
       <section class="internal-section anim" style={`animation-delay:${140 + sortedYears.length * 60}ms`}>
         <div class="section-head">
           <h2 class="section-title serif">Internal Exams</h2>
-          <p class="section-note">First and second internal papers</p>
+          <p class="section-note">Internal papers by assessment round</p>
         </div>
 
         <div class="years-list internal-years-list">

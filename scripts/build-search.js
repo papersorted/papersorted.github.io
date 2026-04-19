@@ -25,6 +25,7 @@ const internalPapersDir = path.resolve(__dirname, "../public/internal-papers");
 const internalExamLabels = {
   "first-internal": "First Internal",
   "second-internal": "Second Internal",
+  "third-internal": "Third Internal",
 };
 
 // Heavily trim out useless grammatical noise to keep the JSON payload microscopic

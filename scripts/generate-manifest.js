@@ -27,7 +27,7 @@ console.log(`📂 Using: ${subjectsDir}`);
 const outFile = path.resolve(__dirname, "../src/data/manifest.json");
 const internalMetaFile = path.resolve(__dirname, "../src/data/internalPapers.json");
 const internalPapersDir = path.resolve(__dirname, "../public/internal-papers");
-const allowedInternalExams = new Set(["first-internal", "second-internal"]);
+const allowedInternalExams = new Set(["first-internal", "second-internal", "third-internal"]);
 const allowedInternalAssetExtensions = new Set([".pdf", ".jpg", ".jpeg", ".png", ".webp"]);
 
 function extractDate(filename, subjectCode) {
@@ -83,7 +83,9 @@ function validateInternalEntries(entries, manifest) {
     }
 
     if (typeof exam !== "string" || !allowedInternalExams.has(exam)) {
-      throw new Error(`${prefix} must use exam "first-internal" or "second-internal".`);
+      throw new Error(
+        `${prefix} must use exam "first-internal", "second-internal", or "third-internal".`
+      );
     }
 
     if (!Number.isInteger(year) || year < 1900 || year > 3000) {

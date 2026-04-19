@@ -4,6 +4,7 @@ import internalPapersRaw from "./internalPapers.json";
 export const INTERNAL_EXAM_LABELS = {
   "first-internal": "First Internal",
   "second-internal": "Second Internal",
+  "third-internal": "Third Internal",
 } as const;
 
 export type InternalExamKind = keyof typeof INTERNAL_EXAM_LABELS;
@@ -112,7 +113,9 @@ function sortSemesterEntries(entries: SemesterContentEntry[]) {
 }
 
 function getInternalSortRank(exam: InternalExamKind) {
-  return exam === "first-internal" ? 1 : 2;
+  if (exam === "first-internal") return 1;
+  if (exam === "second-internal") return 2;
+  return 3;
 }
 
 function sortInternalEntries(entries: InternalContentEntry[]) {
