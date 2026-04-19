@@ -1,14 +1,20 @@
 ---
 import Layout from "../../layouts/Layout.astro";
-import manifest from "../../data/manifest.json";
+import { allSubjectCodes, getSubjectContent } from "../../data/contentCatalog.ts";
 
 export function getStaticPaths() {
-  return Object.keys(manifest).map((code) => ({ params: { code } }));
+  return allSubjectCodes.map((code) => ({ params: { code } }));
 }
 
 const base = import.meta.env.BASE_URL;
 const { code } = Astro.params;
-const papers = (manifest as any)[code!] as {date: string; file: string}[] || [];
+const { semesterPapers, internalPapers } = getSubjectContent(code!);
+const semesterCount = semesterPapers.length;
+const internalCount = internalPapers.length;
+const pageSubLabel = [
+  semesterCount > 0 ? `${semesterCount} semester paper${semesterCount !== 1 ? "s" : ""}` : "",
+  internalCount > 0 ? `${internalCount} internal paper${internalCount !== 1 ? "s" : ""}` : "",
+].filter(Boolean).join(" · ") || "No papers yet";
 
 // Month order for sorting
 const monthOrder: Record<string, number> = {
@@ -29,11 +35,11 @@ function parseDate(dateStr: string): { year: number; monthIdx: number } {
 }
 
 // Group papers by year
-const yearGroups: Record<number, {date: string; file: string; monthIdx: number}[]> = {};
-for (const p of papers) {
-  const { year, monthIdx } = parseDate(p.date);
+const yearGroups: Record<number, {dateLabel: string; file: string; monthIdx: number}[]> = {};
+for (const p of semesterPapers) {
+  const { year, monthIdx } = parseDate(p.dateLabel);
   if (!yearGroups[year]) yearGroups[year] = [];
-  yearGroups[year].push({ ...p, monthIdx });
+  yearGroups[year].push({ dateLabel: p.dateLabel, file: p.file, monthIdx });
 }
 
 // Sort years descending, months ascending within each year
@@ -44,6 +50,27 @@ const sortedYears = Object.keys(yearGroups)
 for (const year of sortedYears) {
   yearGroups[year].sort((a, b) => a.monthIdx - b.monthIdx);
 }
+
+const internalYearGroups: Record<number, typeof internalPapers> = {};
+for (const paper of internalPapers) {
+  const year = paper.year || 0;
+  if (!internalYearGroups[year]) internalYearGroups[year] = [];
+  internalYearGroups[year].push(paper);
+}
+
+const sortedInternalYears = Object.keys(internalYearGroups)
+  .map(Number)
+  .sort((a, b) => b - a);
+
+for (const year of sortedInternalYears) {
+  internalYearGroups[year].sort((a, b) => {
+    const rankA = a.exam === "first-internal" ? 1 : 2;
+    const rankB = b.exam === "first-internal" ? 1 : 2;
+    return rankA - rankB;
+  });
+}
+
+const contributeDelay = 150 + (sortedYears.length + sortedInternalYears.length) * 60;
 ---
 
 <Layout title={code!} description={`Past examination papers for ${code}`}>
@@ -57,7 +84,7 @@ for (const year of sortedYears) {
 
     <header class="page-head anim" style="animation-delay:60ms">
       <h1 class="page-title serif">{code}</h1>
-      <p class="page-sub">{papers.length} examination paper{papers.length !== 1 ? "s" : ""}</p>
+      <p class="page-sub">{pageSubLabel}</p>
     </header>
 
     <div class="years-list">
@@ -72,7 +99,7 @@ for (const year of sortedYears) {
               const href = `${base}viewer/${code}/${encodeURIComponent(paper.file)}/`;
               return (
                 <a href={href} class="paper">
-                  <span class="paper-date">{paper.date}</span>
+                  <span class="paper-date">{paper.dateLabel}</span>
                   <div class="paper-arrow">
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                       <path d="m9 18 6-6-6-6" />
@@ -86,11 +113,50 @@ for (const year of sortedYears) {
       ))}
     </div>
 
-    <div class="contribute-block anim" style={`animation-delay:${120 + sortedYears.length * 60 + 30}ms`}>
+    {sortedInternalYears.length > 0 && (
+      <section class="internal-section anim" style={`animation-delay:${140 + sortedYears.length * 60}ms`}>
+        <div class="section-head">
+          <h2 class="section-title serif">Internal Exams</h2>
+          <p class="section-note">First and second internal papers</p>
+        </div>
+
+        <div class="years-list internal-years-list">
+          {sortedInternalYears.map((year, yi) => (
+            <section class="year-group internal-group anim" style={`animation-delay:${180 + (sortedYears.length + yi) * 60}ms`}>
+              <div class="year-header">
+                <span class="year-label serif">{year}</span>
+                <span class="year-count">{internalYearGroups[year].length}</span>
+              </div>
+
+              <div class="year-papers">
+                {internalYearGroups[year].map((paper) => {
+                  const href = `${base}viewer/${code}/${encodeURIComponent(paper.file)}/`;
+                  return (
+                    <a href={href} class="paper internal-paper">
+                      <span class="paper-stack">
+                        <span class="paper-date">{paper.title}</span>
+                        {paper.teacher && <span class="paper-detail">Teacher · {paper.teacher}</span>}
+                      </span>
+                      <div class="paper-arrow">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                          <path d="m9 18 6-6-6-6" />
+                        </svg>
+                      </div>
+                    </a>
+                  );
+                })}
+              </div>
+            </section>
+          ))}
+        </div>
+      </section>
+    )}
+
+    <div class="contribute-block anim" style={`animation-delay:${contributeDelay}ms`}>
       <p>Missing a paper?</p>
-      <a href={`https://github.com/papersorted/papersorted.github.io/issues/new?title=[New+Paper]+${code}&body=Please+attach+the+PDF+file+for+${code}+here.`} target="_blank" rel="noopener" class="contribute-btn">
+      <a href={`https://github.com/papersorted/papersorted.github.io/issues/new?title=[New+Paper]+${code}&body=Please+attach+the+paper+file+(PDF+or+image)+for+${code}+here.`} target="_blank" rel="noopener" class="contribute-btn">
         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
-        Submit PDF
+        Submit Paper
       </a>
     </div>
   </main>
@@ -127,6 +193,21 @@ for (const year of sortedYears) {
     color: var(--text); margin-bottom: 12px;
   }
   .page-sub { font-size: 0.85rem; color: var(--text-muted); }
+  .section-head {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    padding-top: 18px;
+  }
+  .section-title {
+    font-size: 1.2rem;
+    line-height: 1.05;
+    color: var(--text);
+  }
+  .section-note {
+    font-size: 0.78rem;
+    color: var(--text-muted);
+  }
 
   /* ── Year groups ── */
   .years-list {
@@ -184,6 +265,19 @@ for (const year of sortedYears) {
   .paper-date {
     font-size: 0.88rem; font-weight: 500; color: var(--text);
   }
+  .paper-stack {
+    display: inline-flex;
+    flex-direction: column;
+    gap: 4px;
+    min-width: 0;
+  }
+  .paper-detail {
+    font-size: 0.74rem;
+    color: var(--text-muted);
+  }
+  .internal-years-list {
+    padding-top: 20px;
+  }
 
   .paper-arrow {
     color: #555555; flex-shrink: 0;
@@ -233,6 +327,9 @@ for (const year of sortedYears) {
     }
     .page-head { padding: 20px 0 24px; }
     .year-label { font-size: 1.25rem; }
+    .section-head {
+      padding-top: 14px;
+    }
     .paper { padding: 12px 0; }
     .contribute-block {
       margin: 28px 0 48px;

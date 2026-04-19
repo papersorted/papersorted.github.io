@@ -1,5 +1,5 @@
 ---
-import manifest from "../data/manifest.json";
+import { allSubjectCodes } from "../data/contentCatalog.ts";
 import { buildSubjectSearchSeeds } from "../data/searchAliases.ts";
 
 interface Props {
@@ -16,7 +16,7 @@ const {
   bodyClass = "",
 } = Astro.props;
 
-const subjects = Object.keys(manifest).sort();
+const subjects = allSubjectCodes;
 const subjectSearchSeeds = buildSubjectSearchSeeds(subjects);
 const subjectSearchSeedJson = JSON.stringify(subjectSearchSeeds).replace(/</g, "\\u003c");
 ---
@@ -536,7 +536,7 @@ const subjectSearchSeedJson = JSON.stringify(subjectSearchSeeds).replace(/</g, "
         } else if (startsDeep) {
           const dq = q.slice(1).trim().toLowerCase();
           if (dq.length < 3) {
-            resultsUL.innerHTML = '<li class="palette-item" style="justify-content:center"><span class="mono" style="color:var(--text-faint); font-size:0.85rem;">Type 3 letters to deep-search PDFs...</span></li>';
+            resultsUL.innerHTML = '<li class="palette-item" style="justify-content:center"><span class="mono" style="color:var(--text-faint); font-size:0.85rem;">Type 3 letters to deep-search documents...</span></li>';
             return;
           }
           if (deepIndexMap === false) {
@@ -563,15 +563,15 @@ const subjectSearchSeedJson = JSON.stringify(subjectSearchSeeds).replace(/</g, "
           const ranked = Array.from(hits.entries()).sort((a,b) => b[1] - a[1]).slice(0, 30);
           
           if (ranked.length === 0) {
-             resultsUL.innerHTML = '<li class="palette-item" style="justify-content:center"><span class="mono" style="color:var(--text-faint); font-size:0.85rem;">No exact PDF matches found...</span></li>';
+             resultsUL.innerHTML = '<li class="palette-item" style="justify-content:center"><span class="mono" style="color:var(--text-faint); font-size:0.85rem;">No exact document matches found...</span></li>';
              return;
           }
 
           items = ranked.map(r => {
             const [subj, file] = r[0].split('/');
             return {
-              title: `${subj} <span style="opacity:0.4;font-size:0.8rem">- ${file.replace('.pdf','')}</span>`,
-              action: `/viewer/${subj}/${file}/`,
+              title: `${subj} <span style="opacity:0.4;font-size:0.8rem">- ${file.replace(/\.(pdf|jpe?g|png|webp)$/i, '')}</span>`,
+              action: `/viewer/${subj}/${encodeURIComponent(file)}/`,
               icon: '<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline>'
             };
           });

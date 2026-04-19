@@ -1,11 +1,10 @@
 ---
 import Layout from "../layouts/Layout.astro";
-import manifest from "../data/manifest.json";
+import { allSubjectCodes, getSubjectDocumentCount, totalDocumentCount } from "../data/contentCatalog.ts";
 import { programs } from "../data/programs.ts";
 
-const data = manifest as Record<string, {date: string; file: string}[]>;
-const subjects = Object.keys(data).sort();
-const totalPapers = Object.values(data).reduce((s, a) => s + a.length, 0);
+const subjects = allSubjectCodes;
+const totalPapers = totalDocumentCount;
 
 interface CardInfo {
   code: string;
@@ -20,7 +19,7 @@ interface SemesterFilterInfo {
 
 const cards: CardInfo[] = subjects.map((code) => ({
   code,
-  count: data[code].length,
+  count: getSubjectDocumentCount(code),
 }));
 
 const availableSubjects = new Set(subjects);

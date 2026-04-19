@@ -1,0 +1,42 @@
+[
+  {
+    "subjectCode": "COMP204",
+    "exam": "first-internal",
+    "year": 2025,
+    "file": "COMP204_First_Internal_Dec_2025.jpeg",
+    "teacher": "Praynita Karki",
+    "label": "First Internal · December 2025"
+  },
+  {
+    "subjectCode": "COMP231",
+    "exam": "first-internal",
+    "year": 2025,
+    "file": "COMP231_First_Internal_Dec_2025.jpeg",
+    "teacher": "Hari Aryal",
+    "label": "First Internal · December 2025"
+  },
+  {
+    "subjectCode": "COMP232",
+    "exam": "first-internal",
+    "year": 2025,
+    "file": "COMP232_First_Internal_Dec_2025.jpeg",
+    "teacher": "Sanjog Sigdel",
+    "label": "First Internal · December 2025"
+  },
+  {
+    "subjectCode": "MCSC202",
+    "exam": "first-internal",
+    "year": 2025,
+    "file": "MCSC202_First_Internal_Dec_2025.jpeg",
+    "teacher": "Harish Chandra Bhandari",
+    "label": "First Internal · December 2025"
+  },
+  {
+    "subjectCode": "MATH207",
+    "exam": "first-internal",
+    "year": 2025,
+    "file": "MATH207_First_Internal_Dec_2025.jpeg",
+    "teacher": "Mohan Chandra Adhikari",
+    "label": "First Internal · December 2025"
+  }
+]

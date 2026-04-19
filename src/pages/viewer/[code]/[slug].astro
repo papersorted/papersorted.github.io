@@ -1,27 +1,31 @@
 ---
 import Layout from "../../../layouts/Layout.astro";
-import manifest from "../../../data/manifest.json";
+import { allContentEntries, findContentEntry } from "../../../data/contentCatalog.ts";
 
 export function getStaticPaths() {
-  const paths: { params: { code: string; slug: string } }[] = [];
-  for (const [code, papers] of Object.entries(manifest)) {
-    for (const paper of papers as {date: string; file: string}[]) {
-      paths.push({ params: { code, slug: encodeURIComponent(paper.file) } });
-    }
-  }
-  return paths;
+  return allContentEntries.map((entry) => ({
+    params: {
+      code: entry.code,
+      slug: encodeURIComponent(entry.file),
+    },
+  }));
 }
 
 const base = import.meta.env.BASE_URL;
 const { code, slug } = Astro.params;
 const decoded = decodeURIComponent(slug!);
-const allPapers = (manifest as any)[code!] as {date: string; file: string}[] || [];
-const paper = allPapers.find((p) => p.file === decoded);
-const dateLabel = paper?.date || decoded;
-const pdfUrl = `${base}papers/${code}/${decoded}`;
+const entry = findContentEntry(code!, decoded);
+const dateLabel = entry?.dateLabel || decoded;
+const teacherLabel = entry?.kind === "internal" ? entry.teacher : undefined;
+const documentKindLabel = entry?.kind === "internal" ? "internal paper" : "exam paper";
+const assetType = entry?.assetType || "pdf";
+const isPdfAsset = assetType === "pdf";
+const assetUrl = `${base}${entry?.storageDir || "papers"}/${code}/${decoded}`;
+const openLabel = isPdfAsset ? "Open PDF in new tab" : "Open image in new tab";
+const downloadLabel = isPdfAsset ? "Download PDF" : "Download image";
 ---
 
-<Layout title={`${code} — ${dateLabel}`} description={`View ${code} exam paper from ${dateLabel}`}>
+<Layout title={`${code} — ${dateLabel}`} description={`View ${code} ${documentKindLabel} from ${dateLabel}`}>
   <div class="viewer-layout">
     <!-- Top bar -->
     <div class="viewer-bar">
@@ -33,6 +37,12 @@ const pdfUrl = `${base}papers/${code}/${decoded}`;
           <span class="bar-code mono">{code}</span>
           <span class="bar-sep">·</span>
           <span class="bar-date">{dateLabel}</span>
+          {teacherLabel && (
+            <>
+              <span class="bar-sep">·</span>
+              <span class="bar-teacher">{teacherLabel}</span>
+            </>
+          )}
         </div>
       </div>
       <div class="bar-right">
@@ -41,10 +51,10 @@ const pdfUrl = `${base}papers/${code}/${decoded}`;
           <svg class="sun" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
         </button>
         <div class="dl-group">
-          <a href={pdfUrl} target="_blank" rel="noopener" class="bar-btn" title="Open in new tab">
+          <a href={assetUrl} target="_blank" rel="noopener" class="bar-btn" title={openLabel}>
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
           </a>
-          <a href={pdfUrl} download={decoded} class="dl-btn">
+          <a href={assetUrl} download={decoded} class="dl-btn" title={downloadLabel}>
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
             <span>Download</span>
           </a>
@@ -52,98 +62,112 @@ const pdfUrl = `${base}papers/${code}/${decoded}`;
       </div>
     </div>
 
-    <!-- PDF -->
-    <div class="pdf-area" id="pdf-container">
-      <div id="pdf-loader" style="color:var(--text-faint); padding: 40px; font-family: monospace; text-align: center;">
-        <div class="spinner"></div>
-        <p id="loader-status">Initializing PDF Engine...</p>
-      </div>
+    <div class:list={["document-area", isPdfAsset ? "pdf-area" : "image-area"]} id="document-container">
+      {isPdfAsset ? (
+        <div id="pdf-loader" style="color:var(--text-faint); padding: 40px; font-family: monospace; text-align: center;">
+          <div class="spinner"></div>
+          <p id="loader-status">Loading PDF document...</p>
+        </div>
+      ) : (
+        <div class="image-document-shell">
+          <img
+            id="document-image"
+            src={assetUrl}
+            alt={`${code} ${dateLabel}`}
+            class="viewer-image"
+            loading="eager"
+            decoding="async"
+          />
+          <p id="image-load-error" class="image-load-error" hidden>
+            Unable to load this image file.
+          </p>
+        </div>
+      )}
     </div>
   </div>
 </Layout>
 
-<script is:inline src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
-<input type="hidden" id="pdf-url-source" value={pdfUrl} />
+{isPdfAsset && <script is:inline src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>}
+{isPdfAsset && <input type="hidden" id="document-url-source" value={assetUrl} />}
 
-<script is:inline>
-  (function() {
-    const container = document.getElementById('pdf-container');
-    const status = document.getElementById('loader-status');
-    const urlInput = document.getElementById('pdf-url-source');
-    
-    function log(msg, isError = false) {
-      if (status) {
-        status.innerHTML = msg;
-        if (isError) status.style.color = '#ff6b6b';
-      }
-      console.log(`[PDF-INIT] ${msg}`);
-    }
-
-    async function start() {
-      log("Checking engine globals...");
-      if (!window.pdfjsLib) {
-        log("❌ PDF.js library failed to load. Check your internet connection.", true);
-        return;
-      }
+{isPdfAsset && (
+  <script is:inline>
+    (function() {
+      const container = document.getElementById('document-container');
+      const status = document.getElementById('loader-status');
+      const urlInput = document.getElementById('document-url-source');
       
-      const pdfUrl = urlInput ? urlInput.value : '';
-      if (!pdfUrl) {
-        log("❌ Error: PDF source URL is missing.", true);
-        return;
-      }
-
-      // Force absolute path
-      const finalUrl = pdfUrl.startsWith('/') ? pdfUrl : '/' + pdfUrl;
-      log("Fetching binary from: " + finalUrl);
-
-      try {
-        const pdfjsLib = window.pdfjsLib;
-        const loadingTask = pdfjsLib.getDocument({
-          url: finalUrl,
-          disableWorker: true
-        });
-
-        const pdf = await loadingTask.promise;
-        log(`Success! Rendering ${pdf.numPages} pages...`);
-        
-        const loader = document.getElementById('pdf-loader');
-        if (loader) loader.style.display = 'none';
-
-        for (let pageNum = 1; pageNum <= pdf.numPages; pageNum++) {
-          const canvas = document.createElement('canvas');
-          canvas.className = 'pdf-page-canvas';
-          container.appendChild(canvas);
-
-          const page = await pdf.getPage(pageNum);
-          const unscaled = page.getViewport({ scale: 1.0 });
-          const maxReadableWidth = 720;
-          const availableWidth = Math.max(0, (container.clientWidth || window.innerWidth) - 24);
-          const cw = Math.min(unscaled.width, maxReadableWidth, availableWidth);
-          const logicalScale = cw / unscaled.width;
-          const pixelRatio = window.devicePixelRatio || 1;
-          const viewport = page.getViewport({ scale: logicalScale * pixelRatio });
-          
-          const ctx = canvas.getContext('2d');
-          canvas.height = viewport.height;
-          canvas.width = viewport.width;
-          canvas.style.width = cw + 'px';
-          canvas.style.height = ((viewport.height / viewport.width) * cw) + 'px';
-          
-          await page.render({ canvasContext: ctx, viewport: viewport }).promise;
+      function log(msg, isError = false) {
+        if (status) {
+          status.innerHTML = msg;
+          if (isError) status.style.color = '#ff6b6b';
         }
-      } catch (err) {
-        log(`❌ Rendering Error: ${err.message}`, true);
-        console.error(err);
+        console.log(`[PDF-INIT] ${msg}`);
       }
-    }
 
-    if (document.readyState === 'complete') {
-      start();
-    } else {
-      window.addEventListener('load', start);
-    }
-  })();
-</script>
+      async function start() {
+        if (!window.pdfjsLib) {
+          log("Unable to load the PDF viewer library.", true);
+          return;
+        }
+        
+        const sourceUrl = urlInput ? urlInput.value : '';
+        if (!sourceUrl) {
+          log("Document source URL is missing.", true);
+          return;
+        }
+
+        const finalUrl = sourceUrl.startsWith('/') ? sourceUrl : '/' + sourceUrl;
+        log("Rendering document...");
+
+        try {
+          const pdfjsLib = window.pdfjsLib;
+          const loadingTask = pdfjsLib.getDocument({
+            url: finalUrl,
+            disableWorker: true
+          });
+
+          const pdf = await loadingTask.promise;
+          const loader = document.getElementById('pdf-loader');
+          if (loader) loader.style.display = 'none';
+
+          for (let pageNum = 1; pageNum <= pdf.numPages; pageNum++) {
+            const canvas = document.createElement('canvas');
+            canvas.className = 'pdf-page-canvas';
+            container.appendChild(canvas);
+
+            const page = await pdf.getPage(pageNum);
+            const unscaled = page.getViewport({ scale: 1.0 });
+            const maxReadableWidth = 720;
+            const availableWidth = Math.max(0, (container.clientWidth || window.innerWidth) - 24);
+            const cw = Math.min(unscaled.width, maxReadableWidth, availableWidth);
+            const logicalScale = cw / unscaled.width;
+            const pixelRatio = window.devicePixelRatio || 1;
+            const viewport = page.getViewport({ scale: logicalScale * pixelRatio });
+            
+            const ctx = canvas.getContext('2d');
+            canvas.height = viewport.height;
+            canvas.width = viewport.width;
+            canvas.style.width = cw + 'px';
+            canvas.style.height = ((viewport.height / viewport.width) * cw) + 'px';
+            
+            await page.render({ canvasContext: ctx, viewport: viewport }).promise;
+          }
+        } catch (err) {
+          const message = err instanceof Error ? err.message : "Unknown error";
+          log(`Unable to render this PDF: ${message}`, true);
+          console.error(err);
+        }
+      }
+
+      if (document.readyState === 'complete') {
+        start();
+      } else {
+        window.addEventListener('load', start);
+      }
+    })();
+  </script>
+)}
 
 <style>
   .spinner {
@@ -154,25 +178,41 @@ const pdfUrl = `${base}papers/${code}/${decoded}`;
   @keyframes spin { to { transform: rotate(360deg); } }
 </style>
 
-<script>
-  // PDF Viewer contextually reacts to the global theme class
-  const pdfContainer = document.querySelector('.pdf-area');
-  
-  function syncPDFTheme() {
-    const isDark = !document.documentElement.classList.contains('light');
-    pdfContainer?.classList.toggle('dark-pdf', isDark);
-  }
+{isPdfAsset && (
+  <script>
+    const pdfContainer = document.querySelector('.pdf-area');
+    
+    function syncPDFTheme() {
+      const isDark = !document.documentElement.classList.contains('light');
+      pdfContainer?.classList.toggle('dark-pdf', isDark);
+    }
 
-  // Observer to react to global theme changes instantly
-  const observer = new MutationObserver((mutations) => {
-    mutations.forEach((m) => {
-      if (m.attributeName === 'class') syncPDFTheme();
+    const observer = new MutationObserver((mutations) => {
+      mutations.forEach((m) => {
+        if (m.attributeName === 'class') syncPDFTheme();
+      });
     });
-  });
 
-  observer.observe(document.documentElement, { attributes: true });
-  syncPDFTheme();
-</script>
+    observer.observe(document.documentElement, { attributes: true });
+    syncPDFTheme();
+  </script>
+)}
+
+{!isPdfAsset && (
+  <script is:inline>
+    (function() {
+      const image = document.getElementById('document-image');
+      const error = document.getElementById('image-load-error');
+
+      if (!image || !error) return;
+
+      image.addEventListener('error', () => {
+        image.style.display = 'none';
+        error.hidden = false;
+      });
+    })();
+  </script>
+)}
 
 <style>
   .viewer-layout {
@@ -213,6 +253,13 @@ const pdfUrl = `${base}papers/${code}/${decoded}`;
     color: var(--text-secondary); font-weight: 500;
     white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
   }
+  .bar-teacher {
+    color: var(--text-muted);
+    font-size: 0.78rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
 
   .bar-right { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
   .dl-group { display: flex; align-items: center; gap: 8px; }
@@ -252,12 +299,37 @@ const pdfUrl = `${base}papers/${code}/${decoded}`;
     color: #f5f0e8;
   }
 
-  .pdf-area { 
+  .document-area {
     flex: 1; overflow-y: auto;
     background: linear-gradient(180deg, var(--viewer-bg-top) 0%, var(--viewer-bg) 100%);
     display: flex; flex-direction: column; align-items: center; 
     gap: 16px; padding: 24px 12px;
     transition: background var(--theme-dur) var(--theme-ease);
+  }
+
+  .image-document-shell {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 14px;
+  }
+
+  .viewer-image {
+    width: min(100%, 720px);
+    max-width: 720px;
+    height: auto;
+    display: block;
+    margin: 0 auto;
+    box-shadow: 0 10px 32px rgba(0,0,0,0.24);
+    background: #fff;
+  }
+
+  .image-load-error {
+    color: #c26a6a;
+    font-size: 0.84rem;
+    text-align: center;
+    margin: 0;
   }
   
   /* Use :global here so Astro Compiler doesn't strip it from final bundle since canvases are dynamically created */
@@ -321,6 +393,12 @@ const pdfUrl = `${base}papers/${code}/${decoded}`;
     }
     :root.light .viewer-bar {
       border-bottom-color: rgba(0, 0, 0, 0.1);
+    }
+    .viewer-image {
+      width: min(100%, 720px);
+    }
+    .bar-teacher {
+      display: none;
     }
   }
 </style>

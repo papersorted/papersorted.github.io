@@ -20,6 +20,12 @@ if (!subjectsDir) {
 }
 
 const outFile = path.resolve(__dirname, "../public/search_index.json");
+const internalMetaFile = path.resolve(__dirname, "../src/data/internalPapers.json");
+const internalPapersDir = path.resolve(__dirname, "../public/internal-papers");
+const internalExamLabels = {
+  "first-internal": "First Internal",
+  "second-internal": "Second Internal",
+};
 
 // Heavily trim out useless grammatical noise to keep the JSON payload microscopic
 const stopWords = new Set([
@@ -30,43 +36,71 @@ const stopWords = new Set([
   "kathmandu","ku","faculty","student","course","program","answer"
 ]);
 
-async function processPDF(filePath, subject, fileBasename, invertedIndex) {
+function readInternalEntries() {
+  if (!fs.existsSync(internalMetaFile)) return [];
+
+  const raw = fs.readFileSync(internalMetaFile, "utf8");
+  const parsed = JSON.parse(raw);
+  return Array.isArray(parsed) ? parsed : [];
+}
+
+function getFileExtension(file) {
+  return path.extname(file).toLowerCase();
+}
+
+function getInternalAssetType(file) {
+  return getFileExtension(file) === ".pdf" ? "pdf" : "image";
+}
+
+function buildInternalSearchText(entry) {
+  const examLabel = internalExamLabels[entry.exam] || "Internal";
+  const teacher = typeof entry.teacher === "string" ? entry.teacher.trim() : "";
+  const label = typeof entry.label === "string" ? entry.label.trim() : "";
+  const fileStem = typeof entry.file === "string"
+    ? entry.file.replace(/\.[^.]+$/, "").replace(/[_-]+/g, " ")
+    : "";
+  const pieces = [
+    typeof entry.subjectCode === "string" ? entry.subjectCode.trim() : "",
+    examLabel,
+    examLabel.replace(/ /g, "-"),
+    label,
+    teacher,
+    fileStem,
+    String(entry.year || ""),
+  ];
+  return pieces.filter(Boolean).join(" ");
+}
+
+function addTextToIndex(text, docId, invertedIndex) {
+  const cleanText = text.toLowerCase().replace(/[^a-z0-9\s]/g, " ").replace(/\s+/g, " ");
+  const words = new Set(cleanText.split(" "));
+
+  words.forEach(word => {
+    if (word.length < 4 || stopWords.has(word) || !isNaN(word)) return;
+    if (!invertedIndex[word]) invertedIndex[word] = [];
+    if (!invertedIndex[word].includes(docId)) {
+      invertedIndex[word].push(docId);
+    }
+    if (invertedIndex[word].length > 60) {
+      invertedIndex[word] = invertedIndex[word].slice(0, 60);
+    }
+  });
+}
+
+async function processPDF(filePath, subject, fileBasename, invertedIndex, extraText = "") {
   try {
     const dataBuffer = fs.readFileSync(filePath);
-    // Render text with pdf-parse
     const data = await pdf(dataBuffer);
-    
-    // Clean text: Make lowercase, strip punctuation entirely, collapse whitespace
-    const cleanText = data.text.toLowerCase().replace(/[^a-z0-9\s]/g, " ").replace(/\s+/g, " ");
-    
-    // Tokenize
-    const words = new Set(cleanText.split(" "));
-
-    // The destination coordinate: /subject/COMP201/2019.pdf/
-    // To save bytes, we just store `subject/fileBasename`
     const docId = `${subject}/${fileBasename}`;
-
-    words.forEach(word => {
-      if (word.length < 4 || stopWords.has(word) || !isNaN(word)) return;
-      if (!invertedIndex[word]) invertedIndex[word] = [];
-      // Prevent duplicates if by chance pdf-parse parsed same word
-      if (!invertedIndex[word].includes(docId)) {
-        invertedIndex[word].push(docId);
-      }
-      // If a word maps to over 100 papers, it's virtually a stop word, clamp it.
-      if (invertedIndex[word].length > 60) {
-        invertedIndex[word] = invertedIndex[word].slice(0, 60);
-      }
-    });
-
+    addTextToIndex(`${data.text} ${extraText}`, docId, invertedIndex);
   } catch (error) {
     console.error(`⚠️ Failed parsing ${filePath}: ${error.message}`);
   }
 }
 
 async function main() {
-  console.log(`🔍 Beginning Full-Text PDF Extraction Phase in: ${subjectsDir}`);
-  console.log(`⏱️  WARNING: Parsing 2,000+ PDFs may take 15 minutes. Please wait...`);
+  console.log(`🔍 Beginning full-text extraction phase in: ${subjectsDir}`);
+  console.log(`⏱️  Parsing semester PDFs and internal metadata. This can take a while...`);
 
   const invertedIndex = {};
   
@@ -75,7 +109,9 @@ async function main() {
     return fs.statSync(full).isDirectory() && /^[A-Z]{2,}[0-9]+$/.test(d);
   });
 
-  let totalParsed = 0;
+  let totalIndexed = 0;
+  let pdfParsedCount = 0;
+  let imageMetadataCount = 0;
 
   for (const subject of subjects) {
     const subjectPath = path.join(subjectsDir, subject);
@@ -86,8 +122,38 @@ async function main() {
     for (const file of pdfs) {
       const fullPath = path.join(subjectPath, file);
       await processPDF(fullPath, subject, file, invertedIndex);
-      totalParsed++;
+      totalIndexed++;
+      pdfParsedCount++;
     }
+  }
+
+  const internalEntries = readInternalEntries();
+  if (internalEntries.length > 0) {
+    console.log(`-> Parsing internal papers (${internalEntries.length} files)...`);
+  }
+
+  for (const entry of internalEntries) {
+    if (!entry || typeof entry !== "object") continue;
+    const subject = typeof entry.subjectCode === "string" ? entry.subjectCode.trim() : "";
+    const file = typeof entry.file === "string" ? entry.file : "";
+    if (!subject || !file) continue;
+
+    const fullPath = path.join(internalPapersDir, subject, file);
+    if (!fs.existsSync(fullPath)) {
+      console.warn(`⚠️ Missing internal file for search indexing: ${fullPath}`);
+      continue;
+    }
+
+    const metadataText = buildInternalSearchText(entry);
+    if (getInternalAssetType(file) === "pdf") {
+      await processPDF(fullPath, subject, file, invertedIndex, metadataText);
+      pdfParsedCount++;
+    } else {
+      addTextToIndex(metadataText, `${subject}/${file}`, invertedIndex);
+      imageMetadataCount++;
+    }
+
+    totalIndexed++;
   }
 
   // To prevent the JSON from becoming larger than 2MB, we drop extremely rare words (single occurrences)
@@ -101,7 +167,9 @@ async function main() {
   fs.writeFileSync(outFile, JSON.stringify(invertedIndex));
   
   console.log(`\n✅ HUGE SUCCESS! Built Deep Search Engine Index.`);
-  console.log(`📄 Total PDFs Deep-scanned: ${totalParsed}`);
+  console.log(`📄 Total documents indexed: ${totalIndexed}`);
+  console.log(`📘 PDFs parsed with text extraction: ${pdfParsedCount}`);
+  console.log(`🖼️ Image internals indexed from metadata: ${imageMetadataCount}`);
   console.log(`🧠 Total Unique Searchable Neural Terms Saved: ${Object.keys(invertedIndex).length}`);
   console.log(`The 'Cmd+K' Palette God Mode is officially active!`);
 }
