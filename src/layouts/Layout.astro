@@ -1,5 +1,6 @@
 ---
 import { allSubjectCodes } from "../data/contentCatalog.ts";
+import { buildProgramPaletteEntries } from "../data/programPalette.ts";
 import { buildSubjectSearchSeeds } from "../data/searchAliases.ts";
 
 interface Props {
@@ -17,7 +18,9 @@ const {
 } = Astro.props;
 
 const subjects = allSubjectCodes;
+const programPaletteEntries = buildProgramPaletteEntries(subjects);
 const subjectSearchSeeds = buildSubjectSearchSeeds(subjects);
+const programPaletteEntriesJson = JSON.stringify(programPaletteEntries).replace(/</g, "\\u003c");
 const subjectSearchSeedJson = JSON.stringify(subjectSearchSeeds).replace(/</g, "\\u003c");
 ---
 
@@ -151,6 +154,18 @@ const subjectSearchSeedJson = JSON.stringify(subjectSearchSeeds).replace(/</g, "
         transition:
           background-color var(--theme-dur) var(--theme-ease),
           color var(--theme-dur) var(--theme-ease);
+      }
+
+      html.palette-open,
+      body.palette-open {
+        overflow: hidden;
+        overscroll-behavior: none;
+      }
+
+      body.palette-open {
+        position: fixed;
+        inset: 0;
+        width: 100%;
       }
 
       /* ── Paper grain texture ── */
@@ -297,6 +312,7 @@ const subjectSearchSeedJson = JSON.stringify(subjectSearchSeeds).replace(/</g, "
     <slot />
 
     <!-- Command Palette -->
+    <script id="program-palette-data" type="application/json" set:html={programPaletteEntriesJson}></script>
     <script id="subject-search-data" type="application/json" set:html={subjectSearchSeedJson}></script>
     <style is:inline>
       .palette-overlay {
@@ -307,6 +323,7 @@ const subjectSearchSeedJson = JSON.stringify(subjectSearchSeeds).replace(/</g, "
         display: flex; align-items: flex-start; justify-content: center;
         padding-top: 12vh; opacity: 0; pointer-events: none;
         transition: opacity 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+        overscroll-behavior: contain;
       }
       .palette-overlay.open { opacity: 1; pointer-events: auto; }
       
@@ -340,6 +357,7 @@ const subjectSearchSeedJson = JSON.stringify(subjectSearchSeeds).replace(/</g, "
 
       .palette-results {
         max-height: 380px; overflow-y: auto; padding: 8px 0;
+        overscroll-behavior: contain;
         list-style: none; margin: 0;
       }
       .palette-item {
@@ -347,6 +365,40 @@ const subjectSearchSeedJson = JSON.stringify(subjectSearchSeeds).replace(/</g, "
         display: flex; align-items: center; gap: 12px;
         color: var(--text-secondary); cursor: pointer;
         transition: background-color 0.14s ease, color 0.14s ease;
+      }
+      .palette-copy {
+        min-width: 0;
+        display: grid;
+        gap: 2px;
+      }
+      .palette-title {
+        min-width: 0;
+        color: inherit;
+        font-size: 0.92rem;
+        line-height: 1.28;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+      .palette-subtitle {
+        min-width: 0;
+        color: var(--text-muted);
+        font-size: 0.74rem;
+        line-height: 1.28;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+      .palette-item.active .palette-subtitle,
+      .palette-item:hover .palette-subtitle {
+        color: var(--text-secondary);
+      }
+      .palette-meta {
+        margin-left: auto;
+        color: var(--text-faint);
+        font-size: 0.68rem;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
       }
       .palette-item.active, .palette-item:hover {
         color: var(--text);
@@ -364,7 +416,7 @@ const subjectSearchSeedJson = JSON.stringify(subjectSearchSeeds).replace(/</g, "
       <div class="palette-modal" id="cmd-modal">
         <div class="palette-input-wrap">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
-          <input type="text" id="cmd-input" placeholder="Jump to a subject or area, type > for actions, or ? for Deep Search..." autocomplete="off" spellcheck="false" />
+          <input type="text" id="cmd-input" placeholder="Jump to a subject, program, or semester. Type > for actions or ? for Deep Search..." autocomplete="off" spellcheck="false" />
         </div>
         <ul class="palette-results" id="cmd-results"></ul>
       </div>
@@ -377,9 +429,13 @@ const subjectSearchSeedJson = JSON.stringify(subjectSearchSeeds).replace(/</g, "
       const THEME_KEY = 'ku-app-theme';
       const RECENT_KEY = 'ku-recent';
       const RECENT_VIEW_KEY = 'ku-recent-enabled';
+      const FAVORITES_KEY = 'ku-favorites';
+      const programPaletteNode = document.getElementById('program-palette-data');
+      const programPaletteEntries = programPaletteNode?.textContent ? JSON.parse(programPaletteNode.textContent) : [];
       const subjectSearchSeedNode = document.getElementById('subject-search-data');
       const subjectSearchSeeds = subjectSearchSeedNode?.textContent ? JSON.parse(subjectSearchSeedNode.textContent) : [];
       const subjectSearchIndex = buildSubjectSearchIndex(subjectSearchSeeds);
+      const validSubjectCodes = new Set(subjectSearchSeeds.map((entry) => entry.code));
       
       window.setAppTheme = (isLight) => {
         document.documentElement.classList.toggle('light', isLight);
@@ -454,6 +510,140 @@ const subjectSearchSeedJson = JSON.stringify(subjectSearchSeeds).replace(/</g, "
       let activeIndex = 0;
       let filtered = [];
       let deepIndexMap = null; // caches the inverted index
+      let lockedScrollY = 0;
+
+      function lockPaletteScroll() {
+        lockedScrollY = window.scrollY;
+        const scrollbarWidth = window.innerWidth - document.documentElement.clientWidth;
+        document.documentElement.classList.add('palette-open');
+        document.body.classList.add('palette-open');
+        document.body.style.top = `-${lockedScrollY}px`;
+        if (scrollbarWidth > 0) {
+          document.body.style.paddingRight = `${scrollbarWidth}px`;
+        }
+      }
+
+      function unlockPaletteScroll() {
+        const restoreScrollY = lockedScrollY;
+        document.documentElement.classList.remove('palette-open');
+        document.body.classList.remove('palette-open');
+        document.body.style.top = '';
+        document.body.style.paddingRight = '';
+        window.scrollTo(0, restoreScrollY);
+      }
+
+      function normalizePaletteTerm(value) {
+        return String(value || '')
+          .toLowerCase()
+          .replace(/&/g, ' and ')
+          .replace(/[^a-z0-9]+/g, ' ')
+          .trim()
+          .replace(/\s+/g, ' ');
+      }
+
+      function compactPaletteTerm(value) {
+        return normalizePaletteTerm(value).replace(/\s+/g, '');
+      }
+
+      function paletteMatches(item, query) {
+        const normalizedQuery = normalizePaletteTerm(query);
+        if (!normalizedQuery) return true;
+
+        const haystack = [
+          item.title,
+          item.keywords,
+          item.subtitle
+        ]
+          .filter(Boolean)
+          .join(' ')
+          .toLowerCase();
+        const compactHaystack = compactPaletteTerm(haystack);
+        const compactQuery = compactPaletteTerm(normalizedQuery);
+
+        if (haystack.includes(normalizedQuery)) return true;
+        if (compactQuery && compactHaystack.includes(compactQuery)) return true;
+
+        const queryTokens = normalizedQuery.split(' ').filter(Boolean);
+        return queryTokens.every((token) => haystack.includes(token));
+      }
+
+      function readStoredList(key) {
+        try {
+          const rawValue = localStorage.getItem(key);
+          if (!rawValue) return [];
+          const parsedValue = JSON.parse(rawValue);
+          return Array.isArray(parsedValue) ? parsedValue : [];
+        } catch {
+          localStorage.removeItem(key);
+          return [];
+        }
+      }
+
+      function buildSubjectShortcutEntries() {
+        const recentCodes = readStoredList(RECENT_KEY);
+        const favoriteCodes = readStoredList(FAVORITES_KEY);
+        const entries = [];
+        const seen = new Set();
+
+        const appendEntries = (codes, kind) => {
+          codes.forEach((code) => {
+            if (typeof code !== 'string') return;
+            const normalizedCode = code.trim().toUpperCase();
+            if (!normalizedCode || !validSubjectCodes.has(normalizedCode) || seen.has(`${kind}:${normalizedCode}`)) return;
+            const searchSeed = subjectSearchSeeds.find((entry) => entry.code === normalizedCode);
+            seen.add(`${kind}:${normalizedCode}`);
+            entries.push({
+              id: `${kind}-${normalizedCode}`,
+              title: normalizedCode,
+              subtitle: kind === 'recent' ? 'Recently viewed' : 'Favorite subject',
+              keywords: `${kind} history starred favorite ${normalizedCode} ${(searchSeed?.aliases || []).join(' ')}`,
+              icon: kind === 'recent'
+                ? '<path d="M12 8v4l3 3"></path><circle cx="12" cy="12" r="9"></circle>'
+                : '<polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>',
+              action: `/subject/${normalizedCode}/`,
+              mono: true,
+              meta: kind === 'recent' ? 'Recent' : 'Saved',
+            });
+          });
+        };
+
+        appendEntries(recentCodes.slice(0, 5), 'recent');
+        appendEntries(favoriteCodes.slice(0, 5), 'favorite');
+
+        return entries;
+      }
+
+      function getQuickLinks() {
+        return [
+          {
+            id: 'page-home',
+            title: 'Home',
+            subtitle: 'Return to the archive homepage',
+            keywords: 'home homepage archive front page landing',
+            icon: '<path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>',
+            action: '/',
+            meta: 'Page'
+          },
+          {
+            id: 'page-contributors',
+            title: 'Contributors',
+            subtitle: 'Recognition and archive credits',
+            keywords: 'contributors contributor credit credits recognition open source archive',
+            icon: '<path d="M16 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="10" cy="7" r="4"></circle><path d="M20 8v6"></path><path d="M23 11h-6"></path>',
+            action: '/contributors/',
+            meta: 'Page'
+          },
+          {
+            id: 'page-contribute',
+            title: 'Contribute',
+            subtitle: 'Submit a paper or archive correction',
+            keywords: 'contribute contribution submit upload missing paper issue internal semester',
+            icon: '<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line>',
+            action: '/contribute/',
+            meta: 'Page'
+          }
+        ];
+      }
 
       function getCommands() {
         const isLightTheme = document.documentElement.classList.contains('light');
@@ -461,6 +651,20 @@ const subjectSearchSeedJson = JSON.stringify(subjectSearchSeeds).replace(/</g, "
 
         return [
           { id: 'cmd-home', title: 'Go to Homepage', icon: '<path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>', action: '/' },
+          {
+            id: 'cmd-contributors',
+            title: 'Go to Contributors',
+            keywords: 'contributor contributors credit credits recognition',
+            icon: '<path d="M16 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="10" cy="7" r="4"></circle><path d="M20 8v6"></path><path d="M23 11h-6"></path>',
+            action: '/contributors/'
+          },
+          {
+            id: 'cmd-contribute',
+            title: 'Go to Contribute',
+            keywords: 'contribute contribution submit upload missing paper',
+            icon: '<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line>',
+            action: '/contribute/'
+          },
           {
             id: 'cmd-theme',
             title: isLightTheme ? 'Switch to Dark Mode' : 'Switch to Light Mode',
@@ -492,7 +696,9 @@ const subjectSearchSeedJson = JSON.stringify(subjectSearchSeeds).replace(/</g, "
       }
 
       function openPalette() {
+        if (isOpen) return;
         isOpen = true;
+        lockPaletteScroll();
         overlay.classList.add('open');
         input.value = '';
         renderResults('');
@@ -501,9 +707,11 @@ const subjectSearchSeedJson = JSON.stringify(subjectSearchSeeds).replace(/</g, "
       }
 
       function closePalette() {
+        if (!isOpen) return;
         isOpen = false;
         overlay.classList.remove('open');
         input.blur();
+        unlockPaletteScroll();
       }
 
       function setThemeMode(isLight) {
@@ -532,7 +740,7 @@ const subjectSearchSeedJson = JSON.stringify(subjectSearchSeeds).replace(/</g, "
         
         if (startsCmd) {
           const sc = q.slice(1).trim().toLowerCase();
-          items = getCommands().filter(c => c.title.toLowerCase().includes(sc));
+          items = getCommands().filter((item) => paletteMatches(item, sc));
         } else if (startsDeep) {
           const dq = q.slice(1).trim().toLowerCase();
           if (dq.length < 3) {
@@ -570,32 +778,50 @@ const subjectSearchSeedJson = JSON.stringify(subjectSearchSeeds).replace(/</g, "
           items = ranked.map(r => {
             const [subj, file] = r[0].split('/');
             return {
-              title: `${subj} <span style="opacity:0.4;font-size:0.8rem">- ${file.replace(/\.(pdf|jpe?g|png|webp)$/i, '')}</span>`,
+              title: subj,
+              subtitle: file.replace(/\.(pdf|jpe?g|png|webp)$/i, ''),
               action: `/viewer/${subj}/${encodeURIComponent(file)}/`,
-              icon: '<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline>'
+              icon: '<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline>',
+              mono: true,
+              meta: 'Deep'
             };
           });
         } else {
-          items = searchSubjectEntries(subjectSearchIndex, q, 50).map((entry) => ({
+          const sq = q.trim().toLowerCase();
+          const quickLinks = sq
+            ? getQuickLinks().filter((item) => paletteMatches(item, sq))
+            : getQuickLinks();
+          const collectionLinks = buildSubjectShortcutEntries().filter((item) => !sq || paletteMatches(item, sq));
+          const matchedPrograms = sq
+            ? programPaletteEntries.filter((item) => paletteMatches(item, sq)).slice(0, 18)
+            : programPaletteEntries.filter((item) => item.kind === 'program').slice(0, 10);
+          const subjects = searchSubjectEntries(subjectSearchIndex, q, 50).map((entry) => ({
             title: entry.code,
+            subtitle: entry.aliases.length > 0 ? entry.aliases.slice(0, 2).join(' · ') : 'Subject archive',
             action: `/subject/${entry.code}/`,
-            icon: '<path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/>'
+            icon: '<path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/>',
+            mono: true,
+            meta: 'Subject'
           }));
+          items = sq ? [...quickLinks, ...collectionLinks, ...matchedPrograms, ...subjects] : [...quickLinks, ...collectionLinks, ...matchedPrograms];
         }
 
         filtered = items;
         activeIndex = 0;
 
         if (items.length === 0) {
-          resultsUL.innerHTML = '<li class="palette-item" style="justify-content:center"><span class="mono" style="color:var(--text-faint); font-size:0.85rem;">No subjects match that search.</span></li>';
+          resultsUL.innerHTML = '<li class="palette-item" style="justify-content:center"><span class="mono" style="color:var(--text-faint); font-size:0.85rem;">No matches in subjects, programs, or archive links.</span></li>';
           return;
         }
 
         resultsUL.innerHTML = items.map((item, i) => `
           <li class="palette-item ${i === 0 ? 'active' : ''}" data-idx="${i}">
             <svg class="icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${item.icon}</svg>
-            <span class="mono">${item.title}</span>
-            ${item.action && !String(item.action).startsWith('/') ? '<span style="margin-left:auto;font-size:0.7rem;color:#78736d">Action</span>' : ''}
+            <span class="palette-copy">
+              <span class="palette-title ${item.mono ? 'mono' : ''}">${item.title}</span>
+              ${item.subtitle ? `<span class="palette-subtitle">${item.subtitle}</span>` : ''}
+            </span>
+            ${item.meta ? `<span class="palette-meta">${item.meta}</span>` : item.action && !String(item.action).startsWith('/') ? '<span class="palette-meta">Action</span>' : ''}
           </li>
         `).join('');
       }
@@ -641,6 +867,12 @@ const subjectSearchSeedJson = JSON.stringify(subjectSearchSeeds).replace(/</g, "
           closePalette();
         }
       });
+
+      window.openCommandPalette = openPalette;
+      window.closeCommandPalette = closePalette;
+      window.toggleCommandPalette = () => {
+        isOpen ? closePalette() : openPalette();
+      };
     </script>
   </body>
 </html>

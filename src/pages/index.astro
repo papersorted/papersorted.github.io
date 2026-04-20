@@ -1,6 +1,7 @@
 ---
 import Layout from "../layouts/Layout.astro";
 import { allSubjectCodes, getSubjectDocumentCount, totalDocumentCount } from "../data/contentCatalog.ts";
+import { buildContributeHref } from "../data/contribute.ts";
 import { programs } from "../data/programs.ts";
 
 const subjects = allSubjectCodes;
@@ -21,6 +22,7 @@ const cards: CardInfo[] = subjects.map((code) => ({
   code,
   count: getSubjectDocumentCount(code),
 }));
+const contributeHref = buildContributeHref();
 
 const availableSubjects = new Set(subjects);
 
@@ -76,7 +78,13 @@ const programFilters: Record<string, SemesterFilterInfo[]> = Object.fromEntries(
           <div class="search-box">
             <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
             <input type="text" id="search-input" placeholder="Search by code or subject area..." autocomplete="off" spellcheck="false" />
-            <kbd>/</kbd>
+            <button
+              type="button"
+              id="command-palette-trigger"
+              class="search-shortcut"
+              hidden
+              aria-label="Open archive menu"
+            ></button>
           </div>
         </div>
       </div>
@@ -137,7 +145,6 @@ const programFilters: Record<string, SemesterFilterInfo[]> = Object.fromEntries(
             <span class="card-code mono">{c.code}</span>
             <span class="card-papers">
               {c.count} paper{c.count !== 1 ? "s" : ""}
-              {c.count >= 5 && <span class="paper-density" aria-hidden="true"></span>}
             </span>
           </a>
           <div class="card-actions">
@@ -156,16 +163,39 @@ const programFilters: Record<string, SemesterFilterInfo[]> = Object.fromEntries(
     </div>
   </main>
 
+    <section class="container community-section anim" style="animation-delay:220ms">
+      <div class="community-shell">
+        <div class="community-copy">
+          <p class="community-label">Contributors</p>
+          <h2 class="community-title serif">A good archive is built by the people who use it.</h2>
+          <p class="community-note">
+            If a paper here helped you, add one back. One clear scan or one missing paper is enough.
+          </p>
+        </div>
+
+        <div class="community-actions">
+          <a href="/contributors/" class="community-link">View Contributors</a>
+          <a href={contributeHref} class="community-link community-link-strong">
+            <span>Contribute a Paper</span>
+            <span aria-hidden="true">&rarr;</span>
+          </a>
+        </div>
+      </div>
+    </section>
+
     <footer class="foot">
       <div class="container foot-inner">
         <div class="foot-copy">
           <p class="foot-label">Papersorted</p>
           <p class="foot-note">&copy; 2026 &middot; All rights reserved</p>
         </div>
-        <a href="https://github.com/papersorted/papersorted.github.io/issues/new" target="_blank" rel="noopener" class="foot-link">
-          <span>Contribute Papers</span>
-          <span class="foot-arrow" aria-hidden="true">&rarr;</span>
-        </a>
+        <div class="foot-links">
+          <a href="/contributors/" class="foot-link">Contributors</a>
+          <a href={contributeHref} class="foot-link">
+            <span>Contribute Papers</span>
+            <span class="foot-arrow" aria-hidden="true">&rarr;</span>
+          </a>
+        </div>
       </div>
     </footer>
   </div>
@@ -366,19 +396,41 @@ const programFilters: Record<string, SemesterFilterInfo[]> = Object.fromEntries(
     font-weight: 400;
   }
   .search-box input::placeholder { color: var(--home-muted); }
-  .search-box kbd {
+  .search-shortcut {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    width: 24px;
-    height: 24px;
+    min-width: 52px;
+    height: 28px;
+    padding: 0 10px;
     border: 1px solid var(--home-border);
-    border-radius: 8px;
+    border-radius: 999px;
     background: var(--home-card);
     color: var(--home-muted);
     font-family: 'JetBrains Mono', monospace;
-    font-size: 0.65rem;
+    font-size: 0.68rem;
     font-weight: 500;
+    letter-spacing: 0.04em;
+    line-height: 1;
+    transition:
+      border-color var(--dur) var(--ease),
+      color var(--dur) var(--ease),
+      background-color var(--dur) var(--ease);
+  }
+  .search-shortcut:hover,
+  .search-shortcut:focus-visible {
+    border-color: var(--home-muted);
+    color: var(--home-text);
+    background: var(--home-card);
+  }
+  .search-shortcut:focus-visible {
+    outline: 2px solid rgba(240, 235, 224, 0.12);
+    outline-offset: 2px;
+  }
+  @media (pointer: coarse), (max-width: 720px) {
+    .search-shortcut {
+      display: none !important;
+    }
   }
 
   /* ── PROGRAM DROPDOWN ── */
@@ -506,17 +558,6 @@ const programFilters: Record<string, SemesterFilterInfo[]> = Object.fromEntries(
     font-size: 11px;
     font-weight: 400;
     line-height: 1.2;
-  }
-  #subject-grid .paper-density {
-    display: inline-flex;
-    width: 5px;
-    height: 5px;
-    border-radius: 999px;
-    background: currentColor;
-    opacity: 0.6;
-  }
-  .recent-scroll .paper-density {
-    display: none;
   }
   :is(#subject-grid, #recent-carousel) .card-actions {
     top: 8px;
@@ -650,6 +691,72 @@ const programFilters: Record<string, SemesterFilterInfo[]> = Object.fromEntries(
   }
   .clear-btn:hover { color: var(--home-text); }
 
+  /* ── COMMUNITY ── */
+  .community-section {
+    margin-top: 16px;
+    padding-bottom: 6px;
+  }
+  .community-shell {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 28px 20px;
+    align-items: end;
+    padding: 28px 0 12px;
+    border-top: 1px solid var(--home-border);
+  }
+  .community-copy {
+    max-width: 42rem;
+  }
+  .community-label {
+    font-size: 0.74rem;
+    font-weight: 600;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--home-muted);
+  }
+  .community-title {
+    margin-top: 8px;
+    max-width: 13ch;
+    color: var(--home-text);
+    font-size: clamp(1.75rem, 3.8vw, 2.5rem);
+    line-height: 0.98;
+    letter-spacing: -0.04em;
+  }
+  .community-note {
+    max-width: 34rem;
+    margin-top: 12px;
+    color: var(--home-muted);
+    font-size: 0.85rem;
+    line-height: 1.72;
+  }
+  .community-actions {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    align-self: end;
+  }
+  .community-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    min-height: auto;
+    padding: 0;
+    border: none;
+    border-radius: 0;
+    color: var(--home-muted);
+    font-size: 0.82rem;
+    font-weight: 500;
+    transition: color var(--dur) var(--ease);
+  }
+  .community-link:hover {
+    background: transparent;
+    color: var(--home-text);
+  }
+  .community-link-strong {
+    color: var(--home-text);
+  }
   /* ── FOOTER ── */
   .foot {
     border-top: 1px solid #333333;
@@ -678,6 +785,13 @@ const programFilters: Record<string, SemesterFilterInfo[]> = Object.fromEntries(
   .foot-note {
     font-size: 11px;
     color: #555555;
+  }
+  .foot-links {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    flex-wrap: wrap;
+    justify-content: flex-end;
   }
   .foot-link {
     display: inline-flex;
@@ -752,6 +866,18 @@ const programFilters: Record<string, SemesterFilterInfo[]> = Object.fromEntries(
       width: 42px;
       height: 42px;
     }
+    .community-shell {
+      grid-template-columns: minmax(0, 1fr);
+      gap: 16px;
+      padding: 20px 0 10px;
+    }
+    .community-title {
+      max-width: 100%;
+      font-size: clamp(1.45rem, 8vw, 2rem);
+    }
+    .community-actions {
+      justify-content: flex-start;
+    }
     .foot-inner {
       flex-direction: column;
       align-items: center;
@@ -762,6 +888,10 @@ const programFilters: Record<string, SemesterFilterInfo[]> = Object.fromEntries(
       flex-direction: column;
       gap: 4px;
       align-items: center;
+    }
+    .foot-links {
+      justify-content: center;
+      gap: 12px;
     }
     .foot-label,
     .foot-note,
@@ -794,6 +924,7 @@ const programFilters: Record<string, SemesterFilterInfo[]> = Object.fromEntries(
   import { buildSubjectSearchIndex, scoreSubjectSearch } from "../lib/subjectSearch.ts";
 
   const input = document.getElementById("search-input") as HTMLInputElement;
+  const commandPaletteTrigger = document.getElementById("command-palette-trigger") as HTMLButtonElement | null;
   const grid = document.getElementById("subject-grid")!;
   const cards = Array.from(grid.querySelectorAll<HTMLElement>(".card"));
   const cardsByCode = new Map(cards.map((card) => [card.dataset.code || "", card]));
@@ -815,6 +946,29 @@ const programFilters: Record<string, SemesterFilterInfo[]> = Object.fromEntries(
   let activeSubjects: string[] | null = null;
   let activeFilterLabel = "";
   const FAV_KEY = 'ku-favorites';
+  const paletteWindow = window as typeof window & {
+    openCommandPalette?: () => void;
+  };
+
+  function isApplePlatform() {
+    const userAgentDataNavigator = navigator as Navigator & {
+      userAgentData?: {
+        platform?: string;
+      };
+    };
+    const platform = userAgentDataNavigator.userAgentData?.platform || navigator.platform || "";
+    return /mac|iphone|ipad|ipod/i.test(platform);
+  }
+
+  function syncCommandPaletteTrigger() {
+    if (!commandPaletteTrigger) return;
+
+    const shortcutLabel = isApplePlatform() ? "⌘K" : "Ctrl K";
+    commandPaletteTrigger.hidden = false;
+    commandPaletteTrigger.textContent = shortcutLabel;
+    commandPaletteTrigger.title = `Open archive menu (${shortcutLabel})`;
+    commandPaletteTrigger.setAttribute("aria-label", `Open archive menu (${shortcutLabel})`);
+  }
 
   function readStoredList(key: string) {
     try {
@@ -1053,7 +1207,42 @@ const programFilters: Record<string, SemesterFilterInfo[]> = Object.fromEntries(
     }
   }
 
+  function applyInitialStateFromUrl() {
+    const params = new URLSearchParams(window.location.search);
+    const requestedProgram = (params.get("program") || "").trim();
+    const requestedSemester = (params.get("semester") || "").trim();
+    const requestedQuery = (params.get("q") || params.get("search") || "").trim();
+
+    const programExists = Array.from(progSelect.options).some((option) => option.value === requestedProgram);
+
+    if (programExists) {
+      progSelect.value = requestedProgram;
+    }
+
+    syncProgramSelection();
+
+    if (programExists && requestedSemester) {
+      const matchingSemesterButton = semBtns.find((button) => {
+        return button.dataset.prog === requestedProgram && button.dataset.sem === requestedSemester;
+      });
+
+      if (matchingSemesterButton) {
+        applySemesterFilter(matchingSemesterButton);
+      }
+    }
+
+    if (requestedQuery) {
+      input.value = requestedQuery;
+    }
+
+    update();
+  }
+
   progSelect.addEventListener("change", syncProgramSelection);
+
+  commandPaletteTrigger?.addEventListener("click", () => {
+    paletteWindow.openCommandPalette?.();
+  });
 
   filterBtns.forEach((button) => {
     button.addEventListener("click", () => {
@@ -1067,5 +1256,6 @@ const programFilters: Record<string, SemesterFilterInfo[]> = Object.fromEntries(
     if (e.key === "/" && document.activeElement !== input) { e.preventDefault(); input.focus(); }
   });
 
-  syncProgramSelection();
+  syncCommandPaletteTrigger();
+  applyInitialStateFromUrl();
 </script>

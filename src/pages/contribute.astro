@@ -1,0 +1,549 @@
+---
+import Layout from "../layouts/Layout.astro";
+import { allSubjectCodes, totalDocumentCount } from "../data/contentCatalog.ts";
+import { sortContributors } from "../data/contributors.ts";
+import {
+  buildContributeFormUrl,
+  buildContributeEmailUrl,
+  contributeEmailAddress,
+  contributeRepoUrl,
+  contributionChecklist,
+  contributionExamples,
+} from "../data/contribute.ts";
+
+const base = import.meta.env.BASE_URL;
+const contributorCount = sortContributors().length;
+const defaultFormUrl = buildContributeFormUrl();
+const defaultEmailUrl = buildContributeEmailUrl();
+---
+
+<Layout
+  title="Contribute a Paper"
+  description="Submit semester and internal papers to help preserve Kathmandu University exam archives."
+  bodyClass="contribute-page"
+>
+  <main class="contribute-shell container">
+    <nav class="contribute-breadcrumb anim" aria-label="Breadcrumb">
+      <a href={base} class="contribute-breadcrumb-link">Home</a>
+      <span class="contribute-breadcrumb-sep" aria-hidden="true">/</span>
+      <span class="contribute-breadcrumb-current">Contribute</span>
+    </nav>
+
+    <header class="contribute-hero anim" style="animation-delay:60ms">
+      <div class="contribute-main">
+        <p class="contribute-label">Contribute</p>
+        <h1 class="contribute-title serif">Contribute a paper</h1>
+        <p class="contribute-context" id="selected-subject" hidden></p>
+      </div>
+
+      <div class="contribute-copy">
+        <p class="contribute-lede">
+          Send a paper, correction, or missing file to the archive.
+        </p>
+        <p class="contribute-note">
+          Use the form for most paper submissions. Use email for awkward files. Use GitHub for code and archive fixes. Month and year are optional.
+        </p>
+      </div>
+
+      <div class="contribute-bar">
+        <p class="contribute-stats">
+          <span class="contribute-stat"><strong>{allSubjectCodes.length}</strong> <span>subjects</span></span>
+          <span class="contribute-dot" aria-hidden="true">&middot;</span>
+          <span class="contribute-stat"><strong>{totalDocumentCount.toLocaleString()}</strong> <span>papers</span></span>
+          {contributorCount > 0 && (
+            <>
+              <span class="contribute-dot" aria-hidden="true">&middot;</span>
+              <span class="contribute-stat">
+                <strong>{contributorCount}</strong>
+                <span>{contributorCount === 1 ? "contributor" : "contributors"}</span>
+              </span>
+            </>
+          )}
+        </p>
+
+        <div class="contribute-actions">
+          <a
+            href={defaultFormUrl}
+            data-default-form-url={defaultFormUrl}
+            class="contribute-link contribute-link-strong"
+            id="primary-contribute-link"
+            target="_blank"
+            rel="noopener"
+          >
+            <span>Open Upload Form</span>
+            <span aria-hidden="true">&rarr;</span>
+          </a>
+          <a href={`${base}contributors/`} class="contribute-link">View Contributors</a>
+        </div>
+      </div>
+    </header>
+
+    <section class="contribute-section anim" style="animation-delay:120ms">
+      <div class="section-head">
+        <p class="section-label">Submission Routes</p>
+      </div>
+
+      <div class="route-list">
+        <article class="route-card">
+          <div class="route-copy">
+            <p class="route-label">No account needed</p>
+            <h2 class="route-title">Use the upload form</h2>
+            <p class="route-text" id="form-route-description">
+              Best for most paper submissions. Subject code and exam type matter most.
+            </p>
+          </div>
+
+          <a
+            href={defaultFormUrl}
+            data-default-form-url={defaultFormUrl}
+            class="route-link"
+            id="route-form-link"
+            target="_blank"
+            rel="noopener"
+          >
+            <span>Open Tally Form</span>
+            <span aria-hidden="true">&rarr;</span>
+          </a>
+        </article>
+
+        <article class="route-card route-card-secondary">
+          <div class="route-copy">
+            <p class="route-label">Fallback route</p>
+            <h2 class="route-title">Email the archive</h2>
+            <p class="route-text" id="email-route-description">
+              Use email if the form is awkward for your files. The template already includes the basic fields.
+            </p>
+          </div>
+
+          <a
+            href={defaultEmailUrl}
+            data-default-email-url={defaultEmailUrl}
+            class="route-link"
+            id="route-email-link"
+          >
+            <span>Email Archive</span>
+            <span aria-hidden="true">&rarr;</span>
+          </a>
+        </article>
+
+        <article class="route-card route-card-secondary">
+          <div class="route-copy">
+            <p class="route-label">Open-source route</p>
+            <h2 class="route-title">Contribute on GitHub</h2>
+            <p class="route-text">
+              Use GitHub for code changes, bug reports, metadata cleanup, and archive tooling.
+            </p>
+          </div>
+
+          <a
+            href={contributeRepoUrl}
+            class="route-link"
+            target="_blank"
+            rel="noopener"
+          >
+            <span>Open GitHub</span>
+            <span aria-hidden="true">&rarr;</span>
+          </a>
+        </article>
+      </div>
+    </section>
+
+    <section class="contribute-section anim" style="animation-delay:180ms">
+      <div class="section-head">
+        <p class="section-label">What To Include</p>
+      </div>
+
+      <div class="details-list">
+        {contributionChecklist.map((item) => (
+          <article class="detail-row">
+            <h2 class="detail-title">{item.title}</h2>
+            <p class="detail-copy">{item.description}</p>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <section class="contribute-section anim" style="animation-delay:240ms">
+      <div class="section-head">
+        <p class="section-label">Filename Examples</p>
+      </div>
+
+      <div class="examples-list">
+        {contributionExamples.map((example) => (
+          <article class="example-row">
+            <p class="example-label">{example.label}</p>
+            <p class="example-value mono">{example.value}</p>
+          </article>
+        ))}
+      </div>
+
+    </section>
+  </main>
+</Layout>
+
+<script is:inline>
+  (() => {
+    function cleanSubjectCode(value) {
+      if (typeof value !== 'string') return '';
+      const cleaned = value.trim().toUpperCase();
+      if (!cleaned || !/^[A-Z0-9]+$/.test(cleaned)) return '';
+      return cleaned;
+    }
+
+    function buildFormUrl(subjectCode) {
+      const cleaned = cleanSubjectCode(subjectCode);
+      const url = new URL('https://tally.so/r/QKByPk');
+      if (cleaned) {
+        url.searchParams.set('subject', cleaned);
+      }
+      return url.toString();
+    }
+
+    function buildEmailUrl(subjectCode) {
+      const cleaned = cleanSubjectCode(subjectCode);
+      const subject = cleaned ? `Paper submission: ${cleaned}` : 'Paper submission';
+      const bodyLines = cleaned
+        ? [
+            `Subject code: ${cleaned}`,
+            'Exam type: ',
+            'Month and year (optional): ',
+            'Teacher name (if internal): ',
+            'Credit name or alias (optional): ',
+            '',
+            'Attach the paper file and include any notes that help place it correctly.',
+          ]
+        : [
+            'Subject code: ',
+            'Exam type: ',
+            'Month and year (optional): ',
+            'Teacher name (if internal): ',
+            'Credit name or alias (optional): ',
+            '',
+            'Attach the paper file and include any notes that help place it correctly.',
+          ];
+
+      const params = new URLSearchParams();
+      params.set('subject', subject);
+      params.set('body', bodyLines.join('\n'));
+      return `mailto:sortpapers@gmail.com?${params.toString()}`;
+    }
+
+    const params = new URLSearchParams(window.location.search);
+    const subjectCode = cleanSubjectCode(params.get('subject'));
+    if (!subjectCode) return;
+
+    const context = document.getElementById('selected-subject');
+    const formRouteDescription = document.getElementById('form-route-description');
+    const emailRouteDescription = document.getElementById('email-route-description');
+    const formLinks = document.querySelectorAll('[data-default-form-url]');
+    const emailLinks = document.querySelectorAll('[data-default-email-url]');
+    const nextFormUrl = buildFormUrl(subjectCode);
+    const nextEmailUrl = buildEmailUrl(subjectCode);
+
+    if (context) {
+      context.hidden = false;
+      context.textContent = `Subject selected: ${subjectCode}`;
+    }
+
+    if (formRouteDescription) {
+      formRouteDescription.textContent = `${subjectCode} is already attached to the form. Add the paper and the details you know.`;
+    }
+
+    if (emailRouteDescription) {
+      emailRouteDescription.textContent = `Send the file to sortpapers@gmail.com. ${subjectCode} is already included in the email template.`;
+    }
+
+    formLinks.forEach((link) => {
+      link.setAttribute('href', nextFormUrl);
+    });
+
+    emailLinks.forEach((link) => {
+      link.setAttribute('href', nextEmailUrl);
+    });
+  })();
+</script>
+
+<style>
+  :global(body.contribute-page) {
+    background: var(--bg);
+    color: var(--text);
+  }
+
+  .contribute-shell {
+    max-width: 980px;
+    padding-top: 20px;
+    padding-bottom: 60px;
+  }
+
+  .contribute-breadcrumb {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 0 0 12px;
+    font-size: 0.66rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--text-faint);
+    opacity: 0.9;
+  }
+
+  .contribute-breadcrumb-link {
+    color: var(--text-muted);
+    transition: color var(--dur) var(--ease);
+  }
+
+  .contribute-breadcrumb-link:hover {
+    color: var(--text-secondary);
+  }
+
+  .contribute-hero {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(300px, 0.56fr);
+    gap: 26px 56px;
+    align-items: start;
+    padding: 12px 0 30px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .contribute-label,
+  .section-label {
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+  }
+
+  .contribute-title {
+    margin-top: 10px;
+    color: var(--text);
+    font-size: clamp(3rem, 6.4vw, 4.8rem);
+    line-height: 0.95;
+    letter-spacing: -0.05em;
+    max-width: 8ch;
+  }
+
+  .contribute-context {
+    margin-top: 14px;
+    display: inline-flex;
+    align-items: center;
+    padding: 5px 10px;
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    color: var(--text-secondary);
+    font-size: 0.72rem;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+  .contribute-context[hidden] {
+    display: none;
+  }
+
+  .contribute-copy {
+    max-width: 24rem;
+    padding-top: 12px;
+  }
+
+  .contribute-lede {
+    color: var(--text-secondary);
+    font-size: 0.95rem;
+    line-height: 1.82;
+  }
+
+  .contribute-note {
+    margin-top: 12px;
+    color: var(--text-muted);
+    font-size: 0.8rem;
+    line-height: 1.68;
+  }
+
+  .contribute-bar {
+    grid-column: 1 / -1;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 18px 24px;
+    padding-top: 4px;
+  }
+
+  .contribute-stats {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+    color: var(--text-muted);
+    font-size: 0.8rem;
+  }
+
+  .contribute-stat {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 6px;
+  }
+
+  .contribute-stat strong {
+    color: var(--text);
+    font-weight: 700;
+  }
+
+  .contribute-dot {
+    color: var(--text-faint);
+  }
+
+  .contribute-actions {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 18px;
+  }
+
+  .contribute-link,
+  .route-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    color: var(--text-muted);
+    font-size: 0.8rem;
+    font-weight: 500;
+    transition: color var(--dur) var(--ease);
+  }
+
+  .contribute-link:hover,
+  .route-link:hover {
+    color: var(--text);
+  }
+
+  .contribute-link-strong,
+  .route-link {
+    color: var(--text);
+  }
+
+  .contribute-section {
+    padding-top: 32px;
+  }
+
+  .section-head {
+    padding-bottom: 12px;
+  }
+
+  .route-list,
+  .route-card,
+  .details-list,
+  .examples-list {
+    border-top: 1px solid var(--border);
+  }
+
+  .route-list {
+    display: grid;
+  }
+
+  .route-card {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 28px;
+    padding: 22px 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .route-card-secondary {
+    border-top: none;
+  }
+
+  .route-copy {
+    min-width: 0;
+  }
+
+  .route-label {
+    color: var(--text-faint);
+    font-size: 0.68rem;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+  }
+
+  .route-title,
+  .detail-title {
+    color: var(--text);
+    font-size: 0.98rem;
+    font-weight: 600;
+    line-height: 1.4;
+  }
+
+  .route-text,
+  .detail-copy {
+    color: var(--text-muted);
+    font-size: 0.82rem;
+    line-height: 1.72;
+  }
+
+  .details-list {
+    display: grid;
+  }
+
+  .detail-row,
+  .example-row {
+    display: grid;
+    grid-template-columns: minmax(180px, 0.28fr) minmax(0, 1fr);
+    gap: 22px;
+    padding: 16px 0;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .example-row {
+    align-items: baseline;
+  }
+
+  .example-label {
+    color: var(--text-secondary);
+    font-size: 0.82rem;
+    font-weight: 500;
+    line-height: 1.5;
+  }
+
+  .example-value {
+    color: var(--text);
+    font-size: 0.8rem;
+    line-height: 1.6;
+    word-break: break-word;
+  }
+
+  @media (max-width: 860px) {
+    .contribute-hero {
+      grid-template-columns: 1fr;
+      gap: 18px;
+    }
+
+    .contribute-copy {
+      max-width: 36rem;
+      padding-top: 0;
+    }
+
+    .contribute-bar,
+    .route-card {
+      grid-template-columns: 1fr;
+      align-items: start;
+    }
+  }
+
+  @media (max-width: 640px) {
+    .contribute-shell {
+      padding-top: 18px;
+      padding-bottom: 48px;
+    }
+
+    .contribute-title {
+      font-size: clamp(2.6rem, 15vw, 4rem);
+      max-width: none;
+    }
+
+    .contribute-bar,
+    .contribute-actions {
+      align-items: flex-start;
+    }
+
+    .detail-row,
+    .example-row {
+      grid-template-columns: 1fr;
+      gap: 6px;
+    }
+  }
+</style>

@@ -1,0 +1,419 @@
+---
+import Layout from "../layouts/Layout.astro";
+import { allSubjectCodes, totalDocumentCount } from "../data/contentCatalog.ts";
+import {
+  contributorCreditNote,
+  contributors,
+  formatContributionCount,
+  sortContributors,
+} from "../data/contributors.ts";
+import { buildContributeHref } from "../data/contribute.ts";
+
+const base = import.meta.env.BASE_URL;
+const rankedContributors = sortContributors(contributors);
+const contributeHref = buildContributeHref();
+
+function getContributorSubjectPreview(subjects: string[] | undefined) {
+  if (!subjects || subjects.length === 0) return undefined;
+  if (subjects.length <= 4) return subjects.join(" · ");
+  return `${subjects.slice(0, 4).join(" · ")} · +${subjects.length - 4} more`;
+}
+---
+
+<Layout
+  title="Contributors"
+  description="Recognition for the people helping preserve Kathmandu University exam papers."
+  bodyClass="contributors-page"
+>
+  <main class="contributors-shell container">
+    <nav class="contributors-breadcrumb anim" aria-label="Breadcrumb">
+      <a href={base} class="contributors-breadcrumb-link">Home</a>
+      <span class="contributors-breadcrumb-sep" aria-hidden="true">/</span>
+      <span class="contributors-breadcrumb-current">Contributors</span>
+    </nav>
+
+    <header class="contributors-hero anim" style="animation-delay:60ms">
+      <div class="contributors-hero-main">
+        <p class="contributors-label">Recognition</p>
+        <h1 class="contributors-title serif">Contributors</h1>
+      </div>
+
+      <div class="contributors-hero-copy">
+        <p class="contributors-lede">
+          Most of this archive exists because someone took the time to scan a paper properly, rename it clearly, or send in the one that was missing.
+        </p>
+        <p class="contributors-note">{contributorCreditNote}</p>
+      </div>
+
+      <div class="contributors-hero-bar">
+        <p class="contributors-stats">
+          <span class="contributors-stat"><strong>{allSubjectCodes.length}</strong> <span>subjects</span></span>
+          <span class="contributors-dot" aria-hidden="true">&middot;</span>
+          <span class="contributors-stat"><strong>{totalDocumentCount.toLocaleString()}</strong> <span>papers</span></span>
+          {rankedContributors.length > 0 && (
+            <>
+              <span class="contributors-dot" aria-hidden="true">&middot;</span>
+              <span class="contributors-stat">
+                <strong>{rankedContributors.length}</strong>
+                <span>{rankedContributors.length === 1 ? "contributor" : "contributors"}</span>
+              </span>
+            </>
+          )}
+        </p>
+
+        <div class="contributors-actions">
+          <a href={contributeHref} class="contributors-link contributors-link-strong">
+            <span>Contribute a Paper</span>
+            <span aria-hidden="true">&rarr;</span>
+          </a>
+          <a href={base} class="contributors-link">Back to Archive</a>
+        </div>
+      </div>
+    </header>
+
+    <section class="contributors-section anim" style="animation-delay:120ms">
+      <div class="section-head">
+        <div>
+          <p class="section-label">Recognition Board</p>
+        </div>
+      </div>
+
+      {rankedContributors.length > 0 ? (
+        <div class="recognition-list">
+          {rankedContributors.map((contributor) => (
+            <article class="recognition-row">
+              <div class="recognition-main">
+                <h2 class="recognition-name">{contributor.name}</h2>
+                {contributor.subjects && contributor.subjects.length > 0 && (
+                  <p class="recognition-subjects" title={contributor.subjects.join(" · ")}>
+                    {getContributorSubjectPreview(contributor.subjects)}
+                  </p>
+                )}
+                {contributor.note && <p class="recognition-copy">{contributor.note}</p>}
+              </div>
+
+              <div class="recognition-side">
+                <span class="recognition-count">{formatContributionCount(contributor.contributions)}</span>
+              </div>
+            </article>
+          ))}
+        </div>
+      ) : (
+        <div class="recognition-empty">
+          <h2 class="recognition-title serif">Public credits will appear here when contributors choose to be named.</h2>
+          <p class="recognition-copy">
+            If you want credit, include the name or alias you want shown when you submit. If you do not, leave it blank.
+          </p>
+        </div>
+      )}
+    </section>
+
+    <section class="principles-section anim" style="animation-delay:180ms">
+      <div class="section-head">
+        <div>
+          <p class="section-label">How Credit Works</p>
+        </div>
+      </div>
+
+      <div class="principles-list">
+        <article class="principle-row">
+          <h3 class="principle-name">Public or anonymous</h3>
+          <p class="principle-copy">
+            Sign with your name, use an alias, or leave it unnamed.
+          </p>
+        </article>
+        <article class="principle-row">
+          <h3 class="principle-name">Useful work counts</h3>
+          <p class="principle-copy">
+            Clear scans, corrected filenames, cropped images, and recovered papers all count.
+          </p>
+        </article>
+        <article class="principle-row">
+          <h3 class="principle-name">Teachers stay separate</h3>
+          <p class="principle-copy">
+            Teacher names identify who set the paper. Contributor credit identifies who preserved it.
+          </p>
+        </article>
+      </div>
+    </section>
+  </main>
+</Layout>
+
+<style>
+  :global(body.contributors-page) {
+    background: var(--bg);
+    color: var(--text);
+  }
+
+  .contributors-shell {
+    max-width: 980px;
+    padding-top: 20px;
+    padding-bottom: 56px;
+  }
+
+  .contributors-breadcrumb {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 0 0 12px;
+    font-size: 0.66rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--text-faint);
+    opacity: 0.9;
+  }
+
+  .contributors-breadcrumb-link {
+    color: var(--text-muted);
+    transition: color var(--dur) var(--ease);
+  }
+
+  .contributors-breadcrumb-link:hover {
+    color: var(--text-secondary);
+  }
+
+  .contributors-hero {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(300px, 0.56fr);
+    gap: 26px 56px;
+    align-items: start;
+    padding: 12px 0 30px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .contributors-label,
+  .section-label {
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+  }
+
+  .contributors-title {
+    margin-top: 10px;
+    color: var(--text);
+    font-size: clamp(3rem, 6.8vw, 5rem);
+    line-height: 0.95;
+    letter-spacing: -0.05em;
+    max-width: 7ch;
+  }
+
+  .contributors-stats {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+    color: var(--text-muted);
+    font-size: 0.8rem;
+  }
+
+  .contributors-stat {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 6px;
+  }
+
+  .contributors-stat strong {
+    color: var(--text);
+    font-weight: 700;
+  }
+
+  .contributors-dot {
+    color: var(--text-faint);
+  }
+
+  .contributors-hero-copy {
+    max-width: 24rem;
+    padding-top: 12px;
+  }
+
+  .contributors-lede {
+    color: var(--text-secondary);
+    font-size: 0.94rem;
+    line-height: 1.82;
+  }
+
+  .contributors-note {
+    margin-top: 12px;
+    color: var(--text-muted);
+    font-size: 0.8rem;
+    line-height: 1.68;
+  }
+
+  .contributors-hero-bar {
+    grid-column: 1 / -1;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 18px 24px;
+    padding-top: 4px;
+  }
+
+  .contributors-actions {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 18px;
+  }
+
+  .contributors-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    color: var(--text-muted);
+    font-size: 0.8rem;
+    font-weight: 500;
+    transition: color var(--dur) var(--ease);
+  }
+
+  .contributors-link:hover {
+    color: var(--text);
+  }
+
+  .contributors-link-strong {
+    color: var(--text);
+  }
+
+  .contributors-section,
+  .principles-section {
+    padding-top: 32px;
+  }
+
+  .section-head {
+    padding-bottom: 12px;
+  }
+
+  .recognition-list,
+  .principles-list,
+  .recognition-empty {
+    border-top: 1px solid var(--border);
+  }
+
+  .recognition-row,
+  .principle-row {
+    display: grid;
+    gap: 22px;
+    padding: 18px 0;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .recognition-row {
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: start;
+  }
+
+  .recognition-main {
+    min-width: 0;
+  }
+
+  .recognition-name,
+  .principle-name {
+    color: var(--text);
+    font-size: 0.98rem;
+    font-weight: 600;
+    line-height: 1.4;
+  }
+
+  .recognition-copy,
+  .principle-copy {
+    max-width: 42rem;
+    margin-top: 8px;
+    color: var(--text-muted);
+    font-size: 0.84rem;
+    line-height: 1.72;
+  }
+
+  .recognition-side {
+    text-align: right;
+    color: var(--text-muted);
+    font-size: 0.76rem;
+    white-space: nowrap;
+  }
+
+  .recognition-count {
+    display: block;
+    color: var(--text-secondary);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+
+  .recognition-subjects {
+    margin-top: 6px;
+    color: var(--text-faint);
+    font-size: 0.74rem;
+    letter-spacing: 0.04em;
+  }
+
+  .recognition-empty {
+    padding: 18px 0 6px;
+  }
+
+  .recognition-title {
+    color: var(--text);
+    line-height: 1.02;
+    letter-spacing: -0.04em;
+  }
+
+  .recognition-title {
+    max-width: 16ch;
+    font-size: clamp(1.95rem, 4.2vw, 3rem);
+  }
+
+  .principle-row {
+    grid-template-columns: minmax(0, 240px) minmax(0, 1fr);
+  }
+
+  @media (max-width: 860px) {
+    .contributors-hero {
+      grid-template-columns: minmax(0, 1fr);
+      gap: 18px;
+      align-items: start;
+    }
+
+    .contributors-hero-copy {
+      padding-top: 0;
+      max-width: 36rem;
+    }
+
+    .contributors-hero-bar {
+      display: grid;
+      justify-content: start;
+      gap: 14px;
+      padding-top: 0;
+    }
+
+    .recognition-row,
+    .principle-row {
+      grid-template-columns: minmax(0, 1fr);
+      gap: 10px;
+    }
+
+    .recognition-side {
+      text-align: left;
+      white-space: normal;
+    }
+  }
+
+  @media (max-width: 640px) {
+    .contributors-shell {
+      padding-top: 18px;
+      padding-bottom: 44px;
+    }
+
+    .contributors-title {
+      max-width: 100%;
+      font-size: clamp(2.85rem, 18vw, 4.4rem);
+    }
+
+    .contributors-stats {
+      font-size: 0.78rem;
+      gap: 6px;
+    }
+
+    .contributors-section,
+    .principles-section {
+      padding-top: 28px;
+    }
+  }
+</style>

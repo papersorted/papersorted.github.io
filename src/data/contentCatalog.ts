@@ -21,6 +21,7 @@ interface RawInternalPaperRecord {
   year: number;
   file: string;
   teacher?: string | null;
+  contributor?: string | null;
   label?: string | null;
 }
 
@@ -44,6 +45,7 @@ export interface InternalContentEntry {
   year: number;
   exam: InternalExamKind;
   teacher?: string;
+  contributor?: string;
   assetType: AssetType;
   storageDir: "internal-papers";
 }
@@ -83,6 +85,12 @@ function parseMonthIndex(value: string) {
 }
 
 function cleanTeacherName(value: string | null | undefined) {
+  if (typeof value !== "string") return undefined;
+  const cleaned = value.trim();
+  return cleaned.length > 0 ? cleaned : undefined;
+}
+
+function cleanContributorName(value: string | null | undefined) {
   if (typeof value !== "string") return undefined;
   const cleaned = value.trim();
   return cleaned.length > 0 ? cleaned : undefined;
@@ -158,6 +166,7 @@ for (const record of internalRecords) {
     year: Number.isInteger(record.year) ? record.year : 0,
     exam,
     teacher: cleanTeacherName(record.teacher),
+    contributor: cleanContributorName(record.contributor),
     assetType: getInternalAssetType(record.file),
     storageDir: "internal-papers",
   };

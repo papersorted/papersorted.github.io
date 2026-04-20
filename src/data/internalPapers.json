@@ -5,7 +5,8 @@
     "year": 2024,
     "file": "COMP116_First_Internal_Dec_2024.jpeg",
     "teacher": "Trailokya Raj Ojha",
-    "label": "First Internal · December 2024"
+    "label": "First Internal · December 2024",
+    "contributor": "Paper Steward"
   },
   {
     "subjectCode": "COMP116",
@@ -13,7 +14,8 @@
     "year": 2025,
     "file": "COMP116_Second_Internal_Feb_2025_Set_A.jpeg",
     "teacher": "Trailokya Raj Ojha",
-    "label": "Second Internal · February 2025 · Set A"
+    "label": "Second Internal · February 2025 · Set A",
+    "contributor": "Paper Steward"
   },
   {
     "subjectCode": "COMP116",
@@ -21,7 +23,8 @@
     "year": 2025,
     "file": "COMP116_Second_Internal_Feb_2025_Set_B.jpeg",
     "teacher": "Trailokya Raj Ojha",
-    "label": "Second Internal · February 2025 · Set B"
+    "label": "Second Internal · February 2025 · Set B",
+    "contributor": "Paper Steward"
   },
   {
     "subjectCode": "COMP204",
@@ -29,7 +32,8 @@
     "year": 2025,
     "file": "COMP204_First_Internal_Dec_2025.jpeg",
     "teacher": "Praynita Karki",
-    "label": "First Internal · December 2025"
+    "label": "First Internal · December 2025",
+    "contributor": "Paper Steward"
   },
   {
     "subjectCode": "COMP231",
@@ -37,7 +41,8 @@
     "year": 2025,
     "file": "COMP231_First_Internal_Dec_2025.jpeg",
     "teacher": "Hari Aryal",
-    "label": "First Internal · December 2025"
+    "label": "First Internal · December 2025",
+    "contributor": "Paper Steward"
   },
   {
     "subjectCode": "COMP232",
@@ -45,7 +50,8 @@
     "year": 2025,
     "file": "COMP232_First_Internal_Dec_2025.jpeg",
     "teacher": "Sanjog Sigdel",
-    "label": "First Internal · December 2025"
+    "label": "First Internal · December 2025",
+    "contributor": "Paper Steward"
   },
   {
     "subjectCode": "ENGG112",
@@ -53,7 +59,8 @@
     "year": 2025,
     "file": "ENGG112_First_Internal_Jan_2025.pdf",
     "teacher": "Santosh Shaha",
-    "label": "First Internal · January 2025"
+    "label": "First Internal · January 2025",
+    "contributor": "Paper Steward"
   },
   {
     "subjectCode": "ENGG112",
@@ -61,7 +68,8 @@
     "year": 2025,
     "file": "ENGG112_Second_Internal_Mar_2025.pdf",
     "teacher": "Santosh Shaha",
-    "label": "Second Internal · March 2025"
+    "label": "Second Internal · March 2025",
+    "contributor": "Paper Steward"
   },
   {
     "subjectCode": "ENGG112",
@@ -69,7 +77,8 @@
     "year": 2025,
     "file": "ENGG112_Third_Internal_Mar_2025_MCQ.pdf",
     "teacher": "Santosh Shaha",
-    "label": "Third Internal · March 2025 · MCQ"
+    "label": "Third Internal · March 2025 · MCQ",
+    "contributor": "Paper Steward"
   },
   {
     "subjectCode": "ENGT105",
@@ -77,7 +86,8 @@
     "year": 2025,
     "file": "ENGT105_First_Internal_2025.jpeg",
     "teacher": "Manuka Adhikari",
-    "label": "First Internal · 2025"
+    "label": "First Internal · 2025",
+    "contributor": "Paper Steward"
   },
   {
     "subjectCode": "MCSC202",
@@ -85,7 +95,8 @@
     "year": 2025,
     "file": "MCSC202_First_Internal_Dec_2025.jpeg",
     "teacher": "Harish Chandra Bhandari",
-    "label": "First Internal · December 2025"
+    "label": "First Internal · December 2025",
+    "contributor": "Paper Steward"
   },
   {
     "subjectCode": "MATH207",
@@ -93,7 +104,8 @@
     "year": 2025,
     "file": "MATH207_First_Internal_Dec_2025.jpeg",
     "teacher": "Mohan Chandra Adhikari",
-    "label": "First Internal · December 2025"
+    "label": "First Internal · December 2025",
+    "contributor": "Paper Steward"
   },
   {
     "subjectCode": "MATH104",
@@ -101,7 +113,8 @@
     "year": 2024,
     "file": "MATH104_First_Internal_2024_BIT.jpeg",
     "teacher": "Ganga Ram Phaijoo",
-    "label": "First Internal · 2024 · BIT"
+    "label": "First Internal · 2024 · BIT",
+    "contributor": "Paper Steward"
   },
   {
     "subjectCode": "MATH104",
@@ -109,7 +122,8 @@
     "year": 2024,
     "file": "MATH104_Second_Internal_2024_BIT.jpeg",
     "teacher": "Ganga Ram Phaijoo",
-    "label": "Second Internal · 2024 · BIT"
+    "label": "Second Internal · 2024 · BIT",
+    "contributor": "Paper Steward"
   },
   {
     "subjectCode": "MATH104",
@@ -117,7 +131,8 @@
     "year": 2024,
     "file": "MATH104_First_Internal_2024_CE_Set_A.jpeg",
     "teacher": "Santosh Paudel",
-    "label": "First Internal · 2024 · CE · Set A"
+    "label": "First Internal · 2024 · CE · Set A",
+    "contributor": "Paper Steward"
   },
   {
     "subjectCode": "MATH104",
@@ -125,7 +140,8 @@
     "year": 2024,
     "file": "MATH104_First_Internal_2024_CE_Set_B.jpeg",
     "teacher": "Santosh Paudel",
-    "label": "First Internal · 2024 · CE · Set B"
+    "label": "First Internal · 2024 · CE · Set B",
+    "contributor": "Paper Steward"
   },
   {
     "subjectCode": "MATH104",
@@ -133,6 +149,7 @@
     "year": 2024,
     "file": "MATH104_Second_Internal_2024_CE.jpeg",
     "teacher": "Santosh Paudel",
-    "label": "Second Internal · 2024 · CE"
+    "label": "Second Internal · 2024 · CE",
+    "contributor": "Paper Steward"
   }
 ]

@@ -1,6 +1,7 @@
 ---
 import Layout from "../../layouts/Layout.astro";
 import { allSubjectCodes, getSubjectContent } from "../../data/contentCatalog.ts";
+import { buildContributeFormUrl } from "../../data/contribute.ts";
 
 export function getStaticPaths() {
   return allSubjectCodes.map((code) => ({ params: { code } }));
@@ -71,6 +72,7 @@ for (const year of sortedInternalYears) {
 }
 
 const contributeDelay = 150 + (sortedYears.length + sortedInternalYears.length) * 60;
+const contributeHref = buildContributeFormUrl(code);
 ---
 
 <Layout title={code!} description={`Past examination papers for ${code}`}>
@@ -154,10 +156,14 @@ const contributeDelay = 150 + (sortedYears.length + sortedInternalYears.length) 
 
     <div class="contribute-block anim" style={`animation-delay:${contributeDelay}ms`}>
       <p>Missing a paper?</p>
-      <a href={`https://github.com/papersorted/papersorted.github.io/issues/new?title=[New+Paper]+${code}&body=Please+attach+the+paper+file+(PDF+or+image)+for+${code}+here.`} target="_blank" rel="noopener" class="contribute-btn">
+      <a href={contributeHref} class="contribute-btn">
         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
         Submit Paper
       </a>
+      <p class="contribute-meta">
+        Open the upload form with {code} already filled in. Want public credit? Mention your name or alias when you submit.
+        <a href={`${base}contributors/`}>See contributors</a>
+      </p>
     </div>
   </main>
 </Layout>
@@ -301,6 +307,20 @@ const contributeDelay = 150 + (sortedYears.length + sortedInternalYears.length) 
   }
   .contribute-block p {
     font-size: 0.82rem; color: var(--text-muted); margin-bottom: 12px;
+  }
+  .contribute-meta {
+    margin-top: 10px;
+    margin-bottom: 0;
+    color: var(--text-faint);
+    font-size: 0.74rem;
+    line-height: 1.6;
+  }
+  .contribute-meta a {
+    color: var(--text-muted);
+    transition: color var(--dur) var(--ease);
+  }
+  .contribute-meta a:hover {
+    color: var(--text-secondary);
   }
   .contribute-btn {
     display: inline-flex; align-items: center; justify-content: center; gap: 8px;
