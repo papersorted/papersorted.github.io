@@ -197,6 +197,7 @@ function getContributorSubjectPreview(subjects: string[] | undefined) {
     line-height: 0.95;
     letter-spacing: -0.05em;
     max-width: 7ch;
+    min-width: 0;
   }
 
   .contributors-stats {
@@ -371,6 +372,11 @@ function getContributorSubjectPreview(subjects: string[] | undefined) {
       align-items: start;
     }
 
+    .contributors-hero-main,
+    .contributors-hero-copy {
+      min-width: 0;
+    }
+
     .contributors-hero-copy {
       padding-top: 0;
       max-width: 36rem;
@@ -403,7 +409,10 @@ function getContributorSubjectPreview(subjects: string[] | undefined) {
 
     .contributors-title {
       max-width: 100%;
-      font-size: clamp(2.85rem, 18vw, 4.4rem);
+      font-size: clamp(2.35rem, 14vw, 3.65rem);
+      line-height: 0.94;
+      letter-spacing: -0.045em;
+      overflow-wrap: anywhere;
     }
 
     .contributors-stats {
