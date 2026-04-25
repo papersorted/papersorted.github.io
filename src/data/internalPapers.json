@@ -108,6 +108,15 @@
     "contributor": "Paper Steward"
   },
   {
+    "subjectCode": "MATH207",
+    "exam": "second-internal",
+    "year": 2026,
+    "file": "MATH207_Second_Internal_Feb_2026.jpeg",
+    "teacher": "Mohan Chandra Adhikari",
+    "label": "Second Internal · February 2026",
+    "contributor": "Shamir"
+  },
+  {
     "subjectCode": "MATH104",
     "exam": "first-internal",
     "year": 2024,
@@ -151,5 +160,621 @@
     "teacher": "Santosh Paudel",
     "label": "Second Internal · 2024 · CE",
     "contributor": "Paper Steward"
+  },
+  {
+    "subjectCode": "COMP102",
+    "exam": "first-internal",
+    "year": 2025,
+    "file": "COMP102_First_Internal_2025_Set_A.jpeg",
+    "label": "First Internal · 2025 · Set A",
+    "contributor": "Shamir"
+  },
+  {
+    "subjectCode": "COMP102",
+    "exam": "first-internal",
+    "year": 2025,
+    "file": "COMP102_First_Internal_2025_Set_B.jpeg",
+    "label": "First Internal · 2025 · Set B",
+    "contributor": "Shamir"
+  },
+  {
+    "subjectCode": "COMP102",
+    "exam": "second-internal",
+    "year": 2026,
+    "file": "COMP102_Second_Internal_2026.jpeg",
+    "label": "Second Internal · 2026",
+    "contributor": "Shamir"
+  },
+  {
+    "subjectCode": "EDRG101",
+    "exam": "first-internal",
+    "year": 2025,
+    "file": "EDRG101_First_Internal_2025.jpeg",
+    "label": "First Internal · 2025",
+    "contributor": "Shamir"
+  },
+  {
+    "subjectCode": "MATH101",
+    "exam": "first-internal",
+    "year": 2025,
+    "file": "MATH101_First_Internal_2025_Set_A.jpeg",
+    "label": "First Internal · 2025 · Set A",
+    "contributor": "Shamir"
+  },
+  {
+    "subjectCode": "MATH101",
+    "exam": "first-internal",
+    "year": 2025,
+    "file": "MATH101_First_Internal_2025_Set_B.jpeg",
+    "label": "First Internal · 2025 · Set B",
+    "contributor": "Shamir"
+  },
+  {
+    "subjectCode": "MATH101",
+    "exam": "second-internal",
+    "year": 2026,
+    "file": "MATH101_Second_Internal_2026_Set_A.jpeg",
+    "label": "Second Internal · 2026 · Set A",
+    "contributor": "Shamir"
+  },
+  {
+    "subjectCode": "MATH101",
+    "exam": "second-internal",
+    "year": 2026,
+    "file": "MATH101_Second_Internal_2026_Set_B.jpeg",
+    "label": "Second Internal · 2026 · Set B",
+    "contributor": "Shamir"
+  },
+  {
+    "subjectCode": "PHYS101",
+    "exam": "first-internal",
+    "year": 2025,
+    "file": "PHYS101_First_Internal_2025.jpeg",
+    "label": "First Internal · 2025",
+    "contributor": "Shamir"
+  },
+  {
+    "subjectCode": "COMP204",
+    "exam": "second-internal",
+    "year": 2026,
+    "file": "COMP204_Second_Internal_2026.jpeg",
+    "teacher": "Praynita Karki",
+    "label": "Second Internal · 2026",
+    "contributor": "Shamir"
+  },
+  {
+    "subjectCode": "COMP231",
+    "exam": "second-internal",
+    "year": 2026,
+    "file": "COMP231_Second_Internal_Feb_2026.pdf",
+    "teacher": "Hari Aryal",
+    "label": "Second Internal · February 2026",
+    "contributor": "Shamir"
+  },
+  {
+    "subjectCode": "COMP232",
+    "exam": "second-internal",
+    "year": 2026,
+    "file": "COMP232_Second_Internal_2026.jpeg",
+    "teacher": "Sanjog Sigdel",
+    "label": "Second Internal · 2026",
+    "contributor": "Shamir"
+  },
+  {
+    "subjectCode": "MCSC202",
+    "exam": "second-internal",
+    "year": 2026,
+    "file": "MCSC202_Second_Internal_2026.jpeg",
+    "teacher": "Harish Chandra Bhandari",
+    "label": "Second Internal · 2026",
+    "contributor": "Shamir"
+  },
+  {
+    "subjectCode": "COMP102",
+    "exam": "first-internal",
+    "year": 2024,
+    "file": "COMP102_First_Internal_2024.pdf",
+    "teacher": "Sameer Tamrakar",
+    "label": "First Internal · 2024",
+    "contributor": "Silent Herald"
+  },
+  {
+    "subjectCode": "COMP102",
+    "exam": "second-internal",
+    "year": 2024,
+    "file": "COMP102_Second_Internal_2024.pdf",
+    "teacher": "Sameer Tamrakar",
+    "label": "Second Internal · 2024",
+    "contributor": "Silent Herald"
+  },
+  {
+    "subjectCode": "COMP116",
+    "exam": "first-internal",
+    "year": 2025,
+    "file": "COMP116_First_Internal_2025_Set_A.pdf",
+    "label": "First Internal · 2025 · Set A",
+    "contributor": "Silent Herald"
+  },
+  {
+    "subjectCode": "COMP116",
+    "exam": "first-internal",
+    "year": 2025,
+    "file": "COMP116_First_Internal_2025_Set_B.pdf",
+    "label": "First Internal · 2025 · Set B",
+    "contributor": "Silent Herald"
+  },
+  {
+    "subjectCode": "COMP202",
+    "exam": "first-internal",
+    "year": 2025,
+    "file": "COMP202_First_Internal_Jun_2025.pdf",
+    "teacher": "Prakash Poudyal",
+    "label": "First Internal · June 2025",
+    "contributor": "Silent Herald"
+  },
+  {
+    "subjectCode": "COMP202",
+    "exam": "second-internal",
+    "year": 2025,
+    "file": "COMP202_Second_Internal_May_2025.pdf",
+    "teacher": "Prakash Poudyal",
+    "label": "Second Internal · May 2025",
+    "contributor": "Silent Herald"
+  },
+  {
+    "subjectCode": "COMP202",
+    "exam": "first-internal",
+    "year": 2025,
+    "file": "COMP202_First_Internal_Dec_2025.pdf",
+    "label": "First Internal · December 2025",
+    "contributor": "Silent Herald"
+  },
+  {
+    "subjectCode": "COMP202",
+    "exam": "second-internal",
+    "year": 2026,
+    "file": "COMP202_Second_Internal_Feb_2026.pdf",
+    "label": "Second Internal · February 2026",
+    "contributor": "Silent Herald"
+  },
+  {
+    "subjectCode": "COMP204",
+    "exam": "first-internal",
+    "year": 2025,
+    "file": "COMP204_First_Internal_2025_Set_B.pdf",
+    "label": "First Internal · 2025 · Set B",
+    "contributor": "Silent Herald"
+  },
+  {
+    "subjectCode": "COMP204",
+    "exam": "first-internal",
+    "year": 2025,
+    "file": "COMP204_First_Internal_2025_Set_C.pdf",
+    "teacher": "Praynita Karki",
+    "label": "First Internal · 2025 · Set C",
+    "contributor": "Silent Herald"
+  },
+  {
+    "subjectCode": "COMP204",
+    "exam": "second-internal",
+    "year": 2025,
+    "file": "COMP204_Second_Internal_2025.pdf",
+    "label": "Second Internal · 2025",
+    "contributor": "Silent Herald"
+  },
+  {
+    "subjectCode": "COMP204",
+    "exam": "second-internal",
+    "year": 2025,
+    "file": "COMP204_Second_Internal_2025_CS_Batch.pdf",
+    "label": "Second Internal · 2025 · CS Batch",
+    "contributor": "Silent Herald"
+  },
+  {
+    "subjectCode": "COMP116",
+    "exam": "first-internal",
+    "year": 2024,
+    "file": "COMP116_First_Internal_Jun_2024_Set_C.pdf",
+    "label": "First Internal · June 2024 · Set C",
+    "contributor": "Silent Herald"
+  },
+  {
+    "subjectCode": "COMP116",
+    "exam": "first-internal",
+    "year": 2024,
+    "file": "COMP116_First_Internal_Jun_2024_Set_D.pdf",
+    "label": "First Internal · June 2024 · Set D",
+    "contributor": "Silent Herald"
+  },
+  {
+    "subjectCode": "COMP116",
+    "exam": "second-internal",
+    "year": 2024,
+    "file": "COMP116_Second_Internal_Aug_2024_Set_A.pdf",
+    "label": "Second Internal · August 2024 · Set A",
+    "contributor": "Silent Herald"
+  },
+  {
+    "subjectCode": "COMP116",
+    "exam": "second-internal",
+    "year": 2024,
+    "file": "COMP116_Second_Internal_Aug_2024_Set_B.pdf",
+    "label": "Second Internal · August 2024 · Set B",
+    "contributor": "Silent Herald"
+  },
+  {
+    "subjectCode": "COMP232",
+    "exam": "first-internal",
+    "year": 2025,
+    "file": "COMP232_First_Internal_2025_Set_B.pdf",
+    "label": "First Internal · 2025 · Set B",
+    "contributor": "Silent Herald"
+  },
+  {
+    "subjectCode": "COMP232",
+    "exam": "second-internal",
+    "year": 2025,
+    "file": "COMP232_Second_Internal_2025_CS.pdf",
+    "teacher": "Sanjog Sigdel",
+    "label": "Second Internal · 2025 · CS",
+    "contributor": "Silent Herald"
+  },
+  {
+    "subjectCode": "EDRG101",
+    "exam": "second-internal",
+    "year": 2024,
+    "file": "EDRG101_Second_Internal_2024_Set_A.pdf",
+    "teacher": "Jhabindra Bashyal",
+    "label": "Second Internal · 2024 · Set A",
+    "contributor": "Silent Herald"
+  },
+  {
+    "subjectCode": "EDRG101",
+    "exam": "second-internal",
+    "year": 2024,
+    "file": "EDRG101_Second_Internal_2024_Set_B.pdf",
+    "teacher": "Jhabindra Bashyal",
+    "label": "Second Internal · 2024 · Set B",
+    "contributor": "Silent Herald"
+  },
+  {
+    "subjectCode": "EDRG102",
+    "exam": "first-internal",
+    "year": 2024,
+    "file": "EDRG102_First_Internal_Jun_2024_Set_A.pdf",
+    "label": "First Internal · June 2024 · Set A",
+    "contributor": "Silent Herald"
+  },
+  {
+    "subjectCode": "EDRG102",
+    "exam": "second-internal",
+    "year": 2024,
+    "file": "EDRG102_Second_Internal_Aug_2024_Set_B.pdf",
+    "label": "Second Internal · August 2024 · Set B",
+    "contributor": "Silent Herald"
+  },
+  {
+    "subjectCode": "EEEG202",
+    "exam": "first-internal",
+    "year": 2025,
+    "file": "EEEG202_First_Internal_2025.pdf",
+    "teacher": "Santosh Shaha",
+    "label": "First Internal · 2025",
+    "contributor": "Silent Herald"
+  },
+  {
+    "subjectCode": "EEEG202",
+    "exam": "first-internal",
+    "year": 2025,
+    "file": "EEEG202_First_Internal_2025_BE.pdf",
+    "label": "First Internal · 2025 · BE",
+    "contributor": "Silent Herald"
+  },
+  {
+    "subjectCode": "EEEG202",
+    "exam": "second-internal",
+    "year": 2025,
+    "file": "EEEG202_Second_Internal_2025.pdf",
+    "teacher": "Santosh Shaha",
+    "label": "Second Internal · 2025",
+    "contributor": "Silent Herald"
+  },
+  {
+    "subjectCode": "EEEG202",
+    "exam": "second-internal",
+    "year": 2025,
+    "file": "EEEG202_Second_Internal_2025_EEE.pdf",
+    "label": "Second Internal · 2025 · EEE",
+    "contributor": "Silent Herald"
+  },
+  {
+    "subjectCode": "EEEG211",
+    "exam": "first-internal",
+    "year": 2024,
+    "file": "EEEG211_First_Internal_Dec_2024_CE-CS-B.pdf",
+    "label": "First Internal · December 2024 · CE/CS-B",
+    "contributor": "Silent Herald"
+  },
+  {
+    "subjectCode": "EEEG211",
+    "exam": "first-internal",
+    "year": 2025,
+    "file": "EEEG211_First_Internal_2025.pdf",
+    "label": "First Internal · 2025",
+    "contributor": "Silent Herald"
+  },
+  {
+    "subjectCode": "EEEG211",
+    "exam": "second-internal",
+    "year": 2025,
+    "file": "EEEG211_Second_Internal_2025_UNG.pdf",
+    "label": "Second Internal · 2025 · UNG",
+    "contributor": "Silent Herald"
+  },
+  {
+    "subjectCode": "EEEG211",
+    "exam": "second-internal",
+    "year": 2026,
+    "file": "EEEG211_Second_Internal_2026.pdf",
+    "label": "Second Internal · 2026",
+    "contributor": "Silent Herald"
+  },
+  {
+    "subjectCode": "ENGG111",
+    "exam": "first-internal",
+    "year": 2024,
+    "file": "ENGG111_First_Internal_2024_Set_A.pdf",
+    "teacher": "Kushal Shrestha",
+    "label": "First Internal · 2024 · Set A",
+    "contributor": "Silent Herald"
+  },
+  {
+    "subjectCode": "ENGG111",
+    "exam": "first-internal",
+    "year": 2024,
+    "file": "ENGG111_First_Internal_2024_Set_C.pdf",
+    "teacher": "Kushal Shrestha",
+    "label": "First Internal · 2024 · Set C",
+    "contributor": "Silent Herald"
+  },
+  {
+    "subjectCode": "ENGG112",
+    "exam": "first-internal",
+    "year": 2024,
+    "file": "ENGG112_First_Internal_Jul_2024.pdf",
+    "label": "First Internal · July 2024",
+    "contributor": "Silent Herald"
+  },
+  {
+    "subjectCode": "ENGG112",
+    "exam": "second-internal",
+    "year": 2024,
+    "file": "ENGG112_Second_Internal_2024.pdf",
+    "label": "Second Internal · 2024",
+    "contributor": "Silent Herald"
+  },
+  {
+    "subjectCode": "ENGG112",
+    "exam": "first-internal",
+    "year": 2025,
+    "file": "ENGG112_First_Internal_2025.pdf",
+    "label": "First Internal · 2025",
+    "contributor": "Silent Herald"
+  },
+  {
+    "subjectCode": "ENGT105",
+    "exam": "first-internal",
+    "year": 2024,
+    "file": "ENGT105_First_Internal_2024.pdf",
+    "label": "First Internal · 2024",
+    "contributor": "Silent Herald"
+  },
+  {
+    "subjectCode": "ENVE101",
+    "exam": "first-internal",
+    "year": 2024,
+    "file": "ENVE101_First_Internal_2024.pdf",
+    "label": "First Internal · 2024",
+    "contributor": "Silent Herald"
+  },
+  {
+    "subjectCode": "ENVE101",
+    "exam": "first-internal",
+    "year": 2025,
+    "file": "ENVE101_First_Internal_2025.pdf",
+    "label": "First Internal · 2025",
+    "contributor": "Silent Herald"
+  },
+  {
+    "subjectCode": "ENVE101",
+    "exam": "first-internal",
+    "year": 2025,
+    "file": "ENVE101_First_Internal_2025_Set_A.pdf",
+    "label": "First Internal · 2025 · Set A",
+    "contributor": "Silent Herald"
+  },
+  {
+    "subjectCode": "ENVE101",
+    "exam": "first-internal",
+    "year": 2025,
+    "file": "ENVE101_First_Internal_2025_Set_B.pdf",
+    "label": "First Internal · 2025 · Set B",
+    "contributor": "Silent Herald"
+  },
+  {
+    "subjectCode": "ENVE101",
+    "exam": "second-internal",
+    "year": 2025,
+    "file": "ENVE101_Second_Internal_2025_MCQ_Set_A.pdf",
+    "label": "Second Internal · 2025 · MCQ · Set A",
+    "contributor": "Silent Herald"
+  },
+  {
+    "subjectCode": "ENVE101",
+    "exam": "second-internal",
+    "year": 2025,
+    "file": "ENVE101_Second_Internal_2025_MCQ_Set_B.pdf",
+    "label": "Second Internal · 2025 · MCQ · Set B",
+    "contributor": "Silent Herald"
+  },
+  {
+    "subjectCode": "MATH104",
+    "exam": "first-internal",
+    "year": 2024,
+    "file": "MATH104_First_Internal_2024.pdf",
+    "label": "First Internal · 2024",
+    "contributor": "Silent Herald"
+  },
+  {
+    "subjectCode": "MATH104",
+    "exam": "second-internal",
+    "year": 2024,
+    "file": "MATH104_Second_Internal_2024.pdf",
+    "label": "Second Internal · 2024",
+    "contributor": "Silent Herald"
+  },
+  {
+    "subjectCode": "MATH104",
+    "exam": "first-internal",
+    "year": 2025,
+    "file": "MATH104_First_Internal_2025_CE.pdf",
+    "label": "First Internal · 2025 · CE",
+    "contributor": "Silent Herald"
+  },
+  {
+    "subjectCode": "MATH207",
+    "exam": "first-internal",
+    "year": 2025,
+    "file": "MATH207_First_Internal_2025_CE_Set_A.pdf",
+    "label": "First Internal · 2025 · CE · Set A",
+    "contributor": "Silent Herald"
+  },
+  {
+    "subjectCode": "MATH207",
+    "exam": "second-internal",
+    "year": 2025,
+    "file": "MATH207_Second_Internal_2025_CS_Set_A.pdf",
+    "label": "Second Internal · 2025 · CS · Set A",
+    "contributor": "Silent Herald"
+  },
+  {
+    "subjectCode": "MATH208",
+    "exam": "first-internal",
+    "year": 2025,
+    "file": "MATH208_First_Internal_2025.pdf",
+    "label": "First Internal · 2025",
+    "contributor": "Silent Herald"
+  },
+  {
+    "subjectCode": "MATH208",
+    "exam": "second-internal",
+    "year": 2025,
+    "file": "MATH208_Second_Internal_2025_Missed.pdf",
+    "label": "Second Internal · 2025 · Missed",
+    "contributor": "Silent Herald"
+  },
+  {
+    "subjectCode": "MATH208",
+    "exam": "second-internal",
+    "year": 2026,
+    "file": "MATH208_Second_Internal_2026.pdf",
+    "label": "Second Internal · 2026",
+    "contributor": "Silent Herald"
+  },
+  {
+    "subjectCode": "MCSC201",
+    "exam": "first-internal",
+    "year": 2024,
+    "file": "MCSC201_First_Internal_2024_CI.pdf",
+    "label": "First Internal · 2024 · CI",
+    "contributor": "Silent Herald"
+  },
+  {
+    "subjectCode": "MCSC201",
+    "exam": "first-internal",
+    "year": 2025,
+    "file": "MCSC201_First_Internal_2025_BIT-AP_Term_Test.pdf",
+    "label": "First Internal · 2025 · BIT/AP · Term Test",
+    "contributor": "Silent Herald"
+  },
+  {
+    "subjectCode": "MCSC201",
+    "exam": "first-internal",
+    "year": 2025,
+    "file": "MCSC201_First_Internal_2025_CE.pdf",
+    "label": "First Internal · 2025 · CE",
+    "contributor": "Silent Herald"
+  },
+  {
+    "subjectCode": "MCSC201",
+    "exam": "first-internal",
+    "year": 2025,
+    "file": "MCSC201_First_Internal_2025_CE_Term_Test.pdf",
+    "label": "First Internal · 2025 · CE · Term Test",
+    "contributor": "Silent Herald"
+  },
+  {
+    "subjectCode": "MCSC201",
+    "exam": "second-internal",
+    "year": 2025,
+    "file": "MCSC201_Second_Internal_2025_AP-BIT.pdf",
+    "label": "Second Internal · 2025 · AP/BIT",
+    "contributor": "Silent Herald"
+  },
+  {
+    "subjectCode": "MCSC201",
+    "exam": "second-internal",
+    "year": 2025,
+    "file": "MCSC201_Second_Internal_2025_CE.pdf",
+    "label": "Second Internal · 2025 · CE",
+    "contributor": "Silent Herald"
+  },
+  {
+    "subjectCode": "MCSC201",
+    "exam": "second-internal",
+    "year": 2025,
+    "file": "MCSC201_Second_Internal_2025_CM.pdf",
+    "label": "Second Internal · 2025 · CM",
+    "contributor": "Silent Herald"
+  },
+  {
+    "subjectCode": "MCSC201",
+    "exam": "second-internal",
+    "year": 2026,
+    "file": "MCSC201_Second_Internal_2026.pdf",
+    "label": "Second Internal · 2026",
+    "contributor": "Silent Herald"
+  },
+  {
+    "subjectCode": "PHYS102",
+    "exam": "first-internal",
+    "year": 2024,
+    "file": "PHYS102_First_Internal_2024.pdf",
+    "label": "First Internal · 2024",
+    "contributor": "Silent Herald"
+  },
+  {
+    "subjectCode": "PHYS102",
+    "exam": "first-internal",
+    "year": 2025,
+    "file": "PHYS102_First_Internal_2025.pdf",
+    "label": "First Internal · 2025",
+    "contributor": "Silent Herald"
+  },
+  {
+    "subjectCode": "PHYS102",
+    "exam": "second-internal",
+    "year": 2024,
+    "file": "PHYS102_Second_Internal_2024.pdf",
+    "label": "Second Internal · 2024",
+    "contributor": "Silent Herald"
+  },
+  {
+    "subjectCode": "PHYS102",
+    "exam": "second-internal",
+    "year": 2025,
+    "file": "PHYS102_Second_Internal_2025.pdf",
+    "label": "Second Internal · 2025",
+    "contributor": "Silent Herald"
   }
 ]

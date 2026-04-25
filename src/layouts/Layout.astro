@@ -1,5 +1,5 @@
 ---
-import { allSubjectCodes } from "../data/contentCatalog.ts";
+import { allContentEntries, allSubjectCodes } from "../data/contentCatalog.ts";
 import { buildProgramPaletteEntries } from "../data/programPalette.ts";
 import { buildSubjectSearchSeeds } from "../data/searchAliases.ts";
 
@@ -20,8 +20,30 @@ const {
 const subjects = allSubjectCodes;
 const programPaletteEntries = buildProgramPaletteEntries(subjects);
 const subjectSearchSeeds = buildSubjectSearchSeeds(subjects);
+const internalPaletteEntries = allContentEntries
+  .filter((entry) => entry.kind === "internal")
+  .map((entry) => ({
+    title: entry.code,
+    subtitle: entry.teacher
+      ? `${entry.title} · Teacher · ${entry.teacher}`
+      : entry.title,
+    keywords: [
+      entry.code,
+      entry.title,
+      entry.teacher,
+      entry.contributor,
+      entry.file.replace(/\.[^.]+$/, "").replace(/[_-]+/g, " "),
+    ]
+      .filter(Boolean)
+      .join(" "),
+    action: `/viewer/${entry.code}/${encodeURIComponent(entry.file)}/`,
+    icon: '<path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/><line x1="8" y1="13" x2="16" y2="13"/><line x1="8" y1="17" x2="14" y2="17"/>',
+    mono: true,
+    meta: "Internal",
+  }));
 const programPaletteEntriesJson = JSON.stringify(programPaletteEntries).replace(/</g, "\\u003c");
 const subjectSearchSeedJson = JSON.stringify(subjectSearchSeeds).replace(/</g, "\\u003c");
+const internalPaletteEntriesJson = JSON.stringify(internalPaletteEntries).replace(/</g, "\\u003c");
 ---
 
 <!doctype html>
@@ -314,6 +336,7 @@ const subjectSearchSeedJson = JSON.stringify(subjectSearchSeeds).replace(/</g, "
     <!-- Command Palette -->
     <script id="program-palette-data" type="application/json" set:html={programPaletteEntriesJson}></script>
     <script id="subject-search-data" type="application/json" set:html={subjectSearchSeedJson}></script>
+    <script id="internal-palette-data" type="application/json" set:html={internalPaletteEntriesJson}></script>
     <style is:inline>
       .palette-overlay {
         position: fixed; inset: 0; z-index: 10000;
@@ -434,6 +457,8 @@ const subjectSearchSeedJson = JSON.stringify(subjectSearchSeeds).replace(/</g, "
       const programPaletteEntries = programPaletteNode?.textContent ? JSON.parse(programPaletteNode.textContent) : [];
       const subjectSearchSeedNode = document.getElementById('subject-search-data');
       const subjectSearchSeeds = subjectSearchSeedNode?.textContent ? JSON.parse(subjectSearchSeedNode.textContent) : [];
+      const internalPaletteNode = document.getElementById('internal-palette-data');
+      const internalPaletteEntries = internalPaletteNode?.textContent ? JSON.parse(internalPaletteNode.textContent) : [];
       const subjectSearchIndex = buildSubjectSearchIndex(subjectSearchSeeds);
       const validSubjectCodes = new Set(subjectSearchSeeds.map((entry) => entry.code));
       
@@ -795,6 +820,9 @@ const subjectSearchSeedJson = JSON.stringify(subjectSearchSeeds).replace(/</g, "
           const matchedPrograms = sq
             ? programPaletteEntries.filter((item) => paletteMatches(item, sq)).slice(0, 18)
             : programPaletteEntries.filter((item) => item.kind === 'program').slice(0, 10);
+          const matchedInternalPapers = sq
+            ? internalPaletteEntries.filter((item) => paletteMatches(item, sq)).slice(0, 18)
+            : [];
           const subjects = searchSubjectEntries(subjectSearchIndex, q, 50).map((entry) => ({
             title: entry.code,
             subtitle: entry.aliases.length > 0 ? entry.aliases.slice(0, 2).join(' · ') : 'Subject archive',
@@ -803,7 +831,9 @@ const subjectSearchSeedJson = JSON.stringify(subjectSearchSeeds).replace(/</g, "
             mono: true,
             meta: 'Subject'
           }));
-          items = sq ? [...quickLinks, ...collectionLinks, ...matchedPrograms, ...subjects] : [...quickLinks, ...collectionLinks, ...matchedPrograms];
+          items = sq
+            ? [...quickLinks, ...collectionLinks, ...matchedPrograms, ...subjects, ...matchedInternalPapers]
+            : [...quickLinks, ...collectionLinks, ...matchedPrograms];
         }
 
         filtered = items;
